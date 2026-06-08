@@ -1,0 +1,12 @@
+{
+  "name": "stokvelsa",
+  "version": "1.0.0",
+  "description": "A web-based stokvel management platform built with HTML, CSS, JavaScript, Firebase, and TDD.",
+  "type": "module",
+  "scripts": {
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^1.6.0"
+  }
+}
