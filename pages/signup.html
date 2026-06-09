@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up | StokvelSA</title>
+
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/signup.css" />
+
+    <script type="module" src="js/signup.js" defer></script>
+  </head>
+
+  <body>
+    <main class="auth-page">
+      <section class="auth-card">
+        <div class="auth-header">
+          <h1>Create Account</h1>
+          <p>Join StokvelSA and start managing your savings group.</p>
+        </div>
+
+        <form id="signupForm" class="auth-form">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" placeholder="Enter your full name" />
+            <small class="error-message" id="nameError"></small>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="Enter your email" />
+            <small class="error-message" id="emailError"></small>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              placeholder="Create a password"
+            />
+            <small class="error-message" id="passwordError"></small>
+          </div>
+
+          <div class="form-group">
+            <label for="confirm_password">Confirm Password</label>
+            <input
+              type="password"
+              id="confirm_password"
+              placeholder="Confirm your password"
+            />
+            <small class="error-message" id="confirm_passwordError"></small>
+          </div>
+
+          <div class="form-group">
+            <label for="role">Role</label>
+            <select id="role">
+              <option value="">Select your role</option>
+              <option value="Member">Member</option>
+              <option value="Treasurer">Treasurer</option>
+              <option value="Admin">Admin</option>
+            </select>
+            <small class="error-message" id="roleError"></small>
+          </div>
+
+          <button type="submit" class="btn btn-primary auth-btn">
+            Create Account
+          </button>
+
+          <p class="auth-link">
+            Already have an account?
+            <a href="login.html">Log in</a>
+          </p>
+        </form>
+      </section>
+    </main>
+
+    <div id="toast" class="toast"></div>
+  </body>
+</html>
