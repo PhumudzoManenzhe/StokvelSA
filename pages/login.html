@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | StokvelSA</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/login.css" />
+    <script type="module" src="../js/login.js" defer></script>
+  </head>
+
+  <body>
+    <main class="auth-page">
+      <section class="auth-card">
+        <div class="auth-header">
+          <h1>Welcome Back</h1>
+          <p>Login to access your StokvelSA account.</p>
+        </div>
+
+        <form id="loginForm" class="auth-form" novalidate>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="Enter your email" />
+            <small class="error-message" id="emailError"></small>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+
+            <div class="password-container">
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+              />
+
+              <button type="button" id="togglePassword" class="eye-btn">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+
+            <small class="error-message" id="passwordError"></small>
+          </div>
+
+          <div class="remember-forgot">
+            <label>
+              <input type="checkbox" />
+              Remember Me
+            </label>
+
+            <a href="#">Forgot Password?</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary auth-btn">Log In</button>
+
+          <p class="auth-link">
+            Don't have an account?
+            <a href="signup.html">Create Account</a>
+          </p>
+        </form>
+      </section>
+    </main>
+
+    <div id="toast" class="toast"></div>
+  </body>
+</html>

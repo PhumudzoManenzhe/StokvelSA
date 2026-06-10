@@ -1,12 +1,13 @@
 {
-  "name": "stokvelsa",
-  "version": "1.0.0",
-  "description": "A web-based stokvel management platform built with HTML, CSS, JavaScript, Firebase, and TDD.",
-  "type": "module",
-  "scripts": {
-    "test": "vitest"
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.1"
   },
   "devDependencies": {
-    "vitest": "^1.6.0"
+    "vite": "^8.0.16",
+    "vitest": "^4.1.8"
+  },
+  "scripts": {
+    "dev": "vite",
+    "test": "vitest"
   }
 }
