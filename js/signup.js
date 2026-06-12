@@ -41,8 +41,8 @@ signupForm.addEventListener("submit", async (event) => {
   const user = {
     name: document.getElementById("name").value,
     email: document.getElementById("email").value,
-    password: document.getElementById("password").value,
-    confirm_password: document.getElementById("confirm_password").value,
+    password: passwordInput.value,
+    confirm_password: confirm_passwordInput.value,
     role: document.getElementById("role").value,
   };
 
@@ -51,7 +51,7 @@ signupForm.addEventListener("submit", async (event) => {
     alert(result.message);
     return;
   }
-  const { data, error } = await supabase.auth.signUp({
+  const { data: user_data, error: signup_error } = await supabase.auth.signUp({
     email: user.email,
     password: user.password,
     options: {
@@ -62,11 +62,25 @@ signupForm.addEventListener("submit", async (event) => {
     },
   });
 
-  if (error) {
+  if (signup_error) {
     console.error("Signup error:", error);
     alert(error.message);
     return;
   }
 
-  alert("Account created successfully. Please check your email.");
+  if (user.role == "Member") {
+    window.location.href = "../pages/member_dashboard.html";
+    alert("Account created successfully. Please check your email.");
+    return;
+  }
+  if (user.role == "Admin") {
+    window.location.href = "../pages/admin_dashboard.html";
+    alert("Account created successfully. Please check your email.");
+    return;
+  }
+  if (user.role == "Treasurer") {
+    window.location.href = "../pages/tressure_dashboard.html";
+    alert("Account created successfully. Please check your email.");
+    return;
+  }
 });

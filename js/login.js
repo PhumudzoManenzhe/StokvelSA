@@ -23,12 +23,12 @@ viewPassword.addEventListener("click", () => {
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const user = {
+  const credentials = {
     email: document.getElementById("email").value,
     password: passwordInput.value,
   };
 
-  const result = validateLoginData(user);
+  const result = validateLoginData(credentials);
 
   if (!result.valid) {
     alert(result.message);
@@ -36,8 +36,8 @@ loginForm.addEventListener("submit", async (event) => {
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({
-    email: user.email,
-    password: user.password,
+    email: credentials.email,
+    password: credentials.password,
   });
 
   if (error) {
@@ -45,6 +45,20 @@ loginForm.addEventListener("submit", async (event) => {
     return;
   }
 
-  alert("Login successful!");
-  window.location.href = "../pages/dashboard.html";
+  if (data.user.user_metadata.role == "Member") {
+    window.location.href = "../pages/member_dashboard.html";
+    alert("Login successful!");
+    return;
+  }
+
+  if (data.user.user_metadata.role == "Admin") {
+    window.location.href = "../pages/admin_dashboard.html";
+    alert("Login successful!");
+    return;
+  }
+  if (data.user.user_metadata.role == "Treasurer") {
+    window.location.href = "../pages/tressurer_dashboard.html";
+    alert("Login successful!");
+    return;
+  }
 });
