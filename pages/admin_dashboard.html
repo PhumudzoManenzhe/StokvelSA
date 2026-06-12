@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | StokvelSA</title>
+    <link rel="stylesheet" href="../css/admin_dashborad.css" />
+    <script type="module" src="../js/admin_dashboard.js" defer></script>
+  </head>
+
+  <body>
+    <div class="dashboard-shell">
+      <input class="menu-toggle" type="checkbox" id="menuToggle" />
+      <label class="menu-button" for="menuToggle" aria-label="Open menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
+
+      <aside class="sidebar">
+        <a class="brand" href="admin_dashboard.html">Stokvel<span>SA</span></a>
+        <p class="role-label">Admin</p>
+
+        <nav class="side-nav" aria-label="Admin navigation">
+          <a class="active" href="admin_dashboard.html">Home</a>
+          <button id="logoutBtn" class="logout-link" type="button">
+            Logout
+          </button>
+        </nav>
+      </aside>
+
+      <label class="sidebar-overlay" for="menuToggle" aria-label="Close menu"></label>
+
+      <main class="dashboard-main">
+        <header class="topbar">
+          <p id="loadingMessage" class="eyebrow">Admin dashboard</p>
+          <h1 id="userName">Welcome, Admin</h1>
+        </header>
+
+        <section id="profileBox" class="profile-strip hidden">
+          <span id="userEmail">admin@stokvelsa.co.za</span>
+          <span id="userRole">Admin</span>
+        </section>
+
+        <section class="dashboard-cards" aria-label="Admin dashboard sections">
+          <a class="dashboard-card primary-card" href="admin_groups.html">
+            <span>01</span>
+            <h2>Groups</h2>
+            <p>
+              Create stokvel groups, set contribution amounts and payout rules.
+            </p>
+          </a>
+
+          <a class="dashboard-card" href="admin_members.html">
+            <span>02</span>
+            <h2>Members</h2>
+            <p>Invite members and review onboarding status.</p>
+          </a>
+
+          <a class="dashboard-card" href="admin_meetings.html">
+            <span>03</span>
+            <h2>Meetings</h2>
+            <p>Schedule meetings, agendas and minutes.</p>
+          </a>
+
+          <a class="dashboard-card" href="admin_payments.html">
+            <span>04</span>
+            <h2>Payments</h2>
+            <p>Review payment gateway setup and payout controls.</p>
+          </a>
+
+          <a class="dashboard-card" href="admin_rates.html">
+            <span>05</span>
+            <h2>SA Rates</h2>
+            <p>Manage repo, prime rate source and savings projections.</p>
+          </a>
+
+          <a class="dashboard-card" href="admin_reports.html">
+            <span>06</span>
+            <h2>Reports</h2>
+            <p>Open analytics for compliance, payouts and custom views.</p>
+          </a>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

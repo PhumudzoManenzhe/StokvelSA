@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Treasurer Dashboard | StokvelSA</title>
+    <link rel="stylesheet" href="../css/tressurer_dashboard.css" />
+    <script type="module" src="../js/tressurer_dashboard.js" defer></script>
+  </head>
+
+  <body>
+    <div class="dashboard-shell">
+      <input class="menu-toggle" type="checkbox" id="menuToggle" />
+      <label class="menu-button" for="menuToggle" aria-label="Open menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
+
+      <aside class="sidebar">
+        <a class="brand" href="tressurer_dashboard.html"
+          >Stokvel<span>SA</span></a
+        >
+        <p class="role-label">Treasurer</p>
+
+        <nav class="side-nav" aria-label="Treasurer navigation">
+          <a class="active" href="tressurer_dashboard.html">Home</a>
+          <button id="logoutBtn" class="logout-link" type="button">
+            Logout
+          </button>
+        </nav>
+      </aside>
+
+      <label class="sidebar-overlay" for="menuToggle" aria-label="Close menu"></label>
+
+      <main class="dashboard-main">
+        <header class="topbar">
+          <p class="eyebrow">Treasurer dashboard</p>
+          <h1 id="userName">Welcome, Treasurer</h1>
+          <p>Manage money movement and meeting records</p>
+        </header>
+
+        <section
+          class="dashboard-cards"
+          aria-label="Treasurer dashboard sections"
+        >
+          <a class="dashboard-card primary-card" href="treasurer_payments.html">
+            <span>01</span>
+            <h2>Confirm Payments</h2>
+            <p>Review member contributions and payment proof.</p>
+          </a>
+
+          <a class="dashboard-card" href="treasurer_missed.html">
+            <span>02</span>
+            <h2>Missed Contributions</h2>
+            <p>Flag overdue payments and follow up with members.</p>
+          </a>
+
+          <a class="dashboard-card" href="treasurer_payouts.html">
+            <span>03</span>
+            <h2>Payout Schedule</h2>
+            <p>Prepare upcoming payouts and disbursement approvals.</p>
+          </a>
+
+          <a class="dashboard-card" href="treasurer_meetings.html">
+            <span>04</span>
+            <h2>Meetings</h2>
+            <p>Post agendas, schedule meetings and record minutes.</p>
+          </a>
+
+          <a class="dashboard-card" href="treasurer_announcements.html">
+            <span>05</span>
+            <h2>Announcements</h2>
+            <p>Send updates and reminders to group members.</p>
+          </a>
+
+          <a class="dashboard-card" href="treasurer_reports.html">
+            <span>06</span>
+            <h2>Reports</h2>
+            <p>View compliance, payout and financial summaries.</p>
+          </a>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

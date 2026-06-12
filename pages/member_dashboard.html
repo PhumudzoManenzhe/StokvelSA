@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Member Dashboard | StokvelSA</title>
+    <link rel="stylesheet" href="../css/member_dashboard.css" />
+    <script type="module" src="../js/member_dashboard.js" defer></script>
+  </head>
+
+  <body>
+    <div class="dashboard-shell">
+      <input class="menu-toggle" type="checkbox" id="menuToggle" />
+      <label class="menu-button" for="menuToggle" aria-label="Open menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
+
+      <aside class="sidebar">
+        <a class="brand" href="member_dashboard.html">Stokvel<span>SA</span></a>
+        <p class="role-label">Member</p>
+
+        <nav class="side-nav" aria-label="Member navigation">
+          <a class="active" href="member_dashboard.html">Home</a>
+          <button id="logoutBtn" class="logout-link" type="button">
+            Logout
+          </button>
+        </nav>
+      </aside>
+
+      <label class="sidebar-overlay" for="menuToggle" aria-label="Close menu"></label>
+
+      <main class="dashboard-main">
+        <header class="topbar">
+          <p class="eyebrow">Member dashboard</p>
+          <h1 id="userName">Welcome back</h1>
+        </header>
+
+        <section class="dashboard-cards" aria-label="Member dashboard sections">
+          <a
+            class="dashboard-card primary-card"
+            href="member_contributions.html"
+          >
+            <span>01</span>
+            <h2>My Contributions</h2>
+            <p>View payment history and contribution status.</p>
+          </a>
+
+          <a class="dashboard-card" href="member_payouts.html">
+            <span>02</span>
+            <h2>My Payouts</h2>
+            <p>Check your payout date, order and expected amount.</p>
+          </a>
+
+          <a class="dashboard-card" href="member_payments.html">
+            <span>03</span>
+            <h2>Make Payment</h2>
+            <p>Pay your monthly contribution online.</p>
+          </a>
+
+          <a class="dashboard-card" href="member_meetings.html">
+            <span>04</span>
+            <h2>Meetings</h2>
+            <p>See upcoming meetings, agendas and minutes.</p>
+          </a>
+
+          <a class="dashboard-card" href="member_announcements.html">
+            <span>05</span>
+            <h2>Announcements</h2>
+            <p>Read notices from your treasurer and admin.</p>
+          </a>
+
+          <a class="dashboard-card" href="member_insights.html">
+            <span>06</span>
+            <h2>Savings Insights</h2>
+            <p>View projections using South African rate data.</p>
+          </a>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
