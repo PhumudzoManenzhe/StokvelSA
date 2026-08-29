@@ -1,0 +1,329 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// ─────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────
+
+enum GroupRole {
+  ADMIN
+  TREASURER
+  MEMBER
+}
+
+enum ContributionFrequency {
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+}
+
+enum PayoutOrder {
+  FIXED      // predefined order
+  ROTATING   // rotates each cycle
+  RANDOM     // drawn randomly
+}
+
+enum ContributionStatus {
+  PENDING
+  CONFIRMED
+  MISSED
+  LATE
+}
+
+enum PayoutStatus {
+  SCHEDULED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+enum AttendeeStatus {
+  INVITED
+  CONFIRMED
+  ATTENDED
+  ABSENT
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+}
+
+enum NotificationType {
+  CONTRIBUTION_DUE
+  CONTRIBUTION_CONFIRMED
+  CONTRIBUTION_MISSED
+  PAYOUT_SCHEDULED
+  PAYOUT_COMPLETED
+  MEETING_SCHEDULED
+  MEETING_REMINDER
+  MEMBER_JOINED
+  MEMBER_LEFT
+  GENERAL
+}
+
+// ─────────────────────────────────────────
+// USERS
+// ─────────────────────────────────────────
+
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  fullName   String
+  phone      String?
+  avatarUrl  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+
+  // Relations
+  groupMembers       GroupMember[]
+  contributions      Contribution[]
+  payoutsReceived    Payout[]            @relation("PayoutRecipient")
+  meetingsCreated    Meeting[]
+  attendances        MeetingAttendee[]
+  notifications      Notification[]
+  invitationsSent    Invitation[]        @relation("InvitedBy")
+  invitationsUsed    Invitation[]        @relation("UsedBy")
+  groupsCreated      Group[]
+
+  @@map("users")
+}
+
+// ─────────────────────────────────────────
+// GROUPS (Stokvels)
+// ─────────────────────────────────────────
+
+model Group {
+  id                    String                @id @default(cuid())
+  name                  String
+  description           String?
+  contributionAmount    Decimal               @db.Decimal(10, 2)
+  contributionFrequency ContributionFrequency @default(MONTHLY)
+  payoutOrder           PayoutOrder           @default(FIXED)
+  maxMembers            Int                   @default(20)
+  isActive              Boolean               @default(true)
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  // Foreign key
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
+
+  // Relations
+  members       GroupMember[]
+  contributions Contribution[]
+  payouts       Payout[]
+  meetings      Meeting[]
+  invitations   Invitation[]
+
+  @@index([createdById])
+  @@map("groups")
+}
+
+// ─────────────────────────────────────────
+// GROUP MEMBERS
+// ─────────────────────────────────────────
+
+model GroupMember {
+  id              String    @id @default(cuid())
+  payoutPosition  Int?      // order in payout rotation
+  joinedAt        DateTime  @default(now())
+  leftAt          DateTime?
+  isActive        Boolean   @default(true)
+
+  // Foreign keys
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Role within this specific group
+  role GroupRole @default(MEMBER)
+
+  @@unique([groupId, userId])
+  @@index([groupId])
+  @@index([userId])
+  @@map("group_members")
+}
+
+// ─────────────────────────────────────────
+// CONTRIBUTIONS
+// ─────────────────────────────────────────
+
+model Contribution {
+  id          String             @id @default(cuid())
+  amount      Decimal            @db.Decimal(10, 2)
+  period      String             // e.g. "2024-01" for Jan 2024
+  status      ContributionStatus @default(PENDING)
+  paymentRef  String?            // payment gateway reference
+  dueDate     DateTime
+  paidAt      DateTime?
+  notes       String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  // Foreign keys
+  groupId      String
+  group        Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  memberId     String
+  member       User   @relation(fields: [memberId], references: [id])
+  confirmedById String?
+
+  @@unique([groupId, memberId, period])
+  @@index([groupId])
+  @@index([memberId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("contributions")
+}
+
+// ─────────────────────────────────────────
+// PAYOUTS
+// ─────────────────────────────────────────
+
+model Payout {
+  id            String       @id @default(cuid())
+  amount        Decimal      @db.Decimal(10, 2)
+  scheduledDate DateTime
+  status        PayoutStatus @default(SCHEDULED)
+  paymentRef    String?
+  processedAt   DateTime?
+  notes         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  // Foreign keys
+  groupId     String
+  group       Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  recipientId String
+  recipient   User   @relation("PayoutRecipient", fields: [recipientId], references: [id])
+
+  @@index([groupId])
+  @@index([recipientId])
+  @@index([status])
+  @@index([scheduledDate])
+  @@map("payouts")
+}
+
+// ─────────────────────────────────────────
+// MEETINGS
+// ─────────────────────────────────────────
+
+model Meeting {
+  id        String        @id @default(cuid())
+  title     String
+  date      DateTime
+  location  String?
+  agenda    String?
+  minutes   String?
+  status    MeetingStatus @default(SCHEDULED)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  // Foreign keys
+  groupId     String
+  group       Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
+
+  // Relations
+  attendees MeetingAttendee[]
+
+  @@index([groupId])
+  @@index([date])
+  @@map("meetings")
+}
+
+// ─────────────────────────────────────────
+// MEETING ATTENDEES
+// ─────────────────────────────────────────
+
+model MeetingAttendee {
+  id     String         @id @default(cuid())
+  status AttendeeStatus @default(INVITED)
+
+  // Foreign keys
+  meetingId String
+  meeting   Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  memberId  String
+  member    User    @relation(fields: [memberId], references: [id])
+
+  @@unique([meetingId, memberId])
+  @@map("meeting_attendees")
+}
+
+// ─────────────────────────────────────────
+// NOTIFICATIONS
+// ─────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  message   String
+  read      Boolean          @default(false)
+  data      Json?            // extra context (groupId, amount, etc.)
+  createdAt DateTime         @default(now())
+
+  // Foreign keys
+  userId  String
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  groupId String?
+
+  @@index([userId])
+  @@index([read])
+  @@map("notifications")
+}
+
+// ─────────────────────────────────────────
+// INVITATIONS
+// ─────────────────────────────────────────
+
+model Invitation {
+  id        String       @id @default(cuid())
+  email     String
+  role      GroupRole    @default(MEMBER)
+  code      String       @unique
+  status    InviteStatus @default(PENDING)
+  expiresAt DateTime
+  createdAt DateTime     @default(now())
+
+  // Foreign keys
+  groupId    String
+  group      Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  invitedById String
+  invitedBy  User    @relation("InvitedBy", fields: [invitedById], references: [id])
+  usedById   String?
+  usedBy     User?   @relation("UsedBy", fields: [usedById], references: [id])
+
+  @@index([groupId])
+  @@index([code])
+  @@index([email])
+  @@map("invitations")
+}
+
+// ─────────────────────────────────────────
+// INTEREST RATES (SA Data Integration)
+// Cached from SARB API
+// ─────────────────────────────────────────
+
+model InterestRate {
+  id        String   @id @default(cuid())
+  primeRate Decimal  @db.Decimal(5, 2)
+  repoRate  Decimal  @db.Decimal(5, 2)
+  fetchedAt DateTime @default(now())
+
+  @@map("interest_rates")
+}
