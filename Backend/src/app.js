@@ -48,8 +48,8 @@ app.get('/', (_req, res) => {
 // ── Routes (added as we build) ───────────────────────────
 app.use('/auth', require('./routes/auth'));
 app.use('/groups', require('./routes/groups'));
-// app.use('/contributions', require('./routes/contributions'));
-// app.use('/payouts', require('./routes/payouts'));
+app.use('/groups/:groupId/contributions', require('./routes/contributions'));
+app.use('/groups/:groupId/payouts', require('./routes/payouts'));
 // app.use('/meetings', require('./routes/meetings'));
 // app.use('/notifications', require('./routes/notifications'));
 // app.use('/rates', require('./routes/rates'));
