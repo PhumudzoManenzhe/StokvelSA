@@ -1,5 +1,5 @@
 // @ts-nocheck
-const { AppError } = require('../errors/AppErrors');
+const { AppError } = require('../errors/AppError');
 
 const errorHandler = (err, req, res, next) => {
   // eslint-disable-line no-unused-vars
@@ -28,6 +28,13 @@ const errorHandler = (err, req, res, next) => {
     return res.status(404).json({
       success: false,
       error: 'Record not found',
+    });
+  }
+
+  if (err.code === 'P1001' || err.code === 'P1002') {
+    return res.status(503).json({
+      success: false,
+      error: 'Database unavailable. Please try again shortly.',
     });
   }
 

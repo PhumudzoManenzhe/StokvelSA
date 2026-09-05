@@ -33,6 +33,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "@supabase/supabase-js": "^2.112.4",
     "bcryptjs": "^3.0.3",
@@ -47,6 +48,7 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.3.0",
     "node-cron": "^4.6.0",
+    "pg": "^8.23.0",
     "prisma": "^7.10.0",
     "resend": "^6.25.0",
     "winston": "^3.19.0"

@@ -46,8 +46,8 @@ app.get('/', (_req, res) => {
 });
 
 // ── Routes (added as we build) ───────────────────────────
-// app.use('/auth',          require('./routes/auth'));
-// app.use('/groups',        require('./routes/groups'));
+app.use('/auth', require('./routes/auth'));
+app.use('/groups', require('./routes/groups'));
 // app.use('/contributions', require('./routes/contributions'));
 // app.use('/payouts',       require('./routes/payouts'));
 // app.use('/meetings',      require('./routes/meetings'));
