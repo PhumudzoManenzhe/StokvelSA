@@ -53,7 +53,6 @@ app.use('/groups/:groupId/payouts', require('./routes/payouts'));
 // app.use('/meetings', require('./routes/meetings'));
 // app.use('/notifications', require('./routes/notifications'));
 // app.use('/rates', require('./routes/rates'));
-
 // 404
 app.use((_req, res) => {
   res.status(404).json({ success: false, error: 'Route not found' });
