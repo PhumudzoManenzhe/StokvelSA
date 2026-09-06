@@ -42,17 +42,18 @@ app.get('/health', (_req, res) => {
 });
 
 app.get('/', (_req, res) => {
-  res.json({ message: 'Welcome to Stokvel Platform API' });
+  res.json({ message: 'Welcome to Stokvel Platform API 🏦' });
 });
 
-// ── Routes (added as we build) ───────────────────────────
+// ── Routes ───────────────────────────────────────────────
 app.use('/auth', require('./routes/auth'));
 app.use('/groups', require('./routes/groups'));
 app.use('/groups/:groupId/contributions', require('./routes/contributions'));
 app.use('/groups/:groupId/payouts', require('./routes/payouts'));
-// app.use('/meetings', require('./routes/meetings'));
-// app.use('/notifications', require('./routes/notifications'));
-// app.use('/rates', require('./routes/rates'));
+app.use('/groups/:groupId/meetings', require('./routes/meetings'));
+app.use('/notifications', require('./routes/notifications'));
+app.use('/rates', require('./routes/rates'));
+
 // 404
 app.use((_req, res) => {
   res.status(404).json({ success: false, error: 'Route not found' });
