@@ -6,12 +6,20 @@ const { startMeetingReminderJob } = require('./src/jobs/meetingReminderJob');
 const PORT = process.env.PORT || 3000;
 
 const server = app.listen(PORT, () => {
-  console.log(`Stokvel Platform API running on port ${PORT}`);
+  console.log(`Stokvel Platform API`);
+  console.log(`Port:        ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Health:      http://localhost:${PORT}/health`);
 
-  // Start background jobs
-  startRateRefreshJob();
-  startMeetingReminderJob();
+  // Only start jobs in production or if explicitly enabled
+  if (
+    process.env.NODE_ENV === 'production' ||
+    process.env.ENABLE_JOBS === 'true'
+  ) {
+    startRateRefreshJob();
+    startMeetingReminderJob();
+    console.log('Background jobs started');
+  }
 });
 
 process.on('SIGTERM', () => {
@@ -20,6 +28,15 @@ process.on('SIGTERM', () => {
     console.log('Server closed.');
     process.exit(0);
   });
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled Rejection:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  process.exit(1);
 });
 
 module.exports = server;
