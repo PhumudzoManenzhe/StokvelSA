@@ -15,7 +15,7 @@
     "db:studio": "prisma studio",
     "db:seed": "node prisma/seed.js",
     "db:reset": "prisma migrate reset",
-    "postinstall": "prisma skills sync || exit 0",
+    "postinstall": "npx prisma generate",
     "prisma": "prisma"
   },
   "jest": {
