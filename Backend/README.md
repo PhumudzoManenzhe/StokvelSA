@@ -84,3 +84,5 @@
 11. Install axios: npm install axios
 
 12. Install node-cron: npm install node-cron
+
+13. npm install pdfkit csv-writer exceljs
