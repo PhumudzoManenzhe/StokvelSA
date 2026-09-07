@@ -86,3 +86,5 @@
 12. Install node-cron: npm install node-cron
 
 13. npm install pdfkit csv-writer exceljs
+
+14. touch render.yaml
