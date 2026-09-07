@@ -53,6 +53,7 @@ app.use('/groups/:groupId/payouts', require('./routes/payouts'));
 app.use('/groups/:groupId/meetings', require('./routes/meetings'));
 app.use('/notifications', require('./routes/notifications'));
 app.use('/rates', require('./routes/rates'));
+app.use('/groups/:groupId/analytics', require('./routes/analytics'));
 
 // 404
 app.use((_req, res) => {

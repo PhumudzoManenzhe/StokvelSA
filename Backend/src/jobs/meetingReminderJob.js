@@ -43,15 +43,15 @@ const startMeetingReminderJob = () => {
 
       if (upcomingMeetings.length > 0) {
         console.log(
-          `📅 Sent reminders for ${upcomingMeetings.length} upcoming meeting(s)`
+          `Sent reminders for ${upcomingMeetings.length} upcoming meeting(s)`
         );
       }
     } catch (err) {
-      console.error('❌ Meeting reminder job failed:', err.message);
+      console.error('Meeting reminder job failed:', err.message);
     }
   });
 
-  console.log('⏰ Meeting reminder job scheduled (hourly)');
+  console.log('Meeting reminder job scheduled (hourly)');
 };
 
 module.exports = { startMeetingReminderJob };
