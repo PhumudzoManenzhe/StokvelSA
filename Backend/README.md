@@ -80,3 +80,7 @@
     },
     "exclude": ["node_modules"]
     }
+
+11. Install axios: npm install axios
+
+12. Install node-cron: npm install node-cron
