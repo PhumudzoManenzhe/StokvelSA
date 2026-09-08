@@ -67,7 +67,7 @@ app.get('/health', async (_req, res) => {
 });
 
 app.get('/', (_req, res) => {
-  res.json({ message: 'Welcome to Stokvel Platform API 🏦' });
+  res.json({ message: 'Welcome to Stokvel Platform API ' });
 });
 
 // ── Routes ───────────────────────────────────────────────
