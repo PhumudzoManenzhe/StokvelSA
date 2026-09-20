@@ -6,6 +6,8 @@ const {
   BadRequestError,
   ConflictError,
 } = require('../errors/AppError');
+const { sendPayoutNotification } = require('./emailService');
+const { sanitizeText } = require('../utils/sanitize');
 
 // ─────────────────────────────────────────
 // SCHEDULE PAYOUT
@@ -54,7 +56,7 @@ const schedulePayout = async (
       recipientId,
       amount,
       scheduledDate: new Date(scheduledDate),
-      notes: notes || null,
+      notes: notes == null ? null : sanitizeText(notes, 2000, 'Notes'),
       status: 'SCHEDULED',
     },
     include: {
@@ -64,6 +66,7 @@ const schedulePayout = async (
     },
   });
 
+  try { await sendPayoutNotification({ to: payout.recipient.email, memberName: payout.recipient.fullName, groupName: (await prisma.group.findUnique({ where: { id: groupId }, select: { name: true } })).name, amount: payout.amount, date: payout.scheduledDate }); } catch (err) { console.error('Failed to send payout email:', err.message); }
   return payout;
 };
 
@@ -155,7 +158,7 @@ const failPayout = async (payoutId, notes) => {
     where: { id: payoutId },
     data: {
       status: 'FAILED',
-      notes: notes || null,
+      notes: notes == null ? null : sanitizeText(notes, 2000, 'Notes'),
     },
   });
 };

@@ -2,7 +2,6 @@
 const { AppError } = require('../errors/AppError');
 
 const errorHandler = (err, req, res, next) => {
-  // eslint-disable-line no-unused-vars
   console.error({
     message: err.message,
     stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,

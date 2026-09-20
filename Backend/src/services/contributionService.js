@@ -7,6 +7,7 @@ const {
   ConflictError,
   BadRequestError,
 } = require('../errors/AppError');
+const { sanitizeText } = require('../utils/sanitize');
 
 // ─────────────────────────────────────────
 // GET CURRENT PERIOD
@@ -173,7 +174,7 @@ const flagMissedContribution = async (contributionId, notes) => {
     where: { id: contributionId },
     data: {
       status: 'MISSED',
-      notes: notes || null,
+      notes: notes == null ? null : sanitizeText(notes, 2000, 'Notes'),
     },
   });
 };

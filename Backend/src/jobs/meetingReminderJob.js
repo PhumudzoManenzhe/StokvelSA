@@ -2,6 +2,7 @@
 const cron = require('node-cron');
 const prisma = require('../config/database');
 const notificationService = require('../services/notificationService');
+const { sendMeetingReminder } = require('../services/emailService');
 
 /**
  * Sends meeting reminders 24 hours before each meeting
@@ -39,6 +40,15 @@ const startMeetingReminderJob = () => {
             location: meeting.location,
           },
         });
+        const members = await prisma.groupMember.findMany({
+          where: { groupId: meeting.groupId, isActive: true },
+          include: { user: { select: { email: true, fullName: true } } },
+        });
+        for (const member of members) {
+          try {
+            await sendMeetingReminder({ to: member.user.email, memberName: member.user.fullName, groupName: meeting.group.name, meetingTitle: meeting.title, date: meeting.date, location: meeting.location });
+          } catch (err) { console.error('Meeting reminder email failed:', err.message); }
+        }
       }
 
       if (upcomingMeetings.length > 0) {

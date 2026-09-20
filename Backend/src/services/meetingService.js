@@ -6,6 +6,7 @@ const {
   BadRequestError,
   ConflictError,
 } = require('../errors/AppError');
+const { sanitizeText } = require('../utils/sanitize');
 
 // ─────────────────────────────────────────
 // CREATE MEETING
@@ -24,10 +25,10 @@ const createMeeting = async (
     data: {
       groupId,
       createdById,
-      title,
+      title: sanitizeText(title, 200, 'Meeting title'),
       date: new Date(date),
-      location: location || null,
-      agenda: agenda || null,
+      location: location == null ? null : sanitizeText(location, 300, 'Location'),
+      agenda: agenda == null ? null : sanitizeText(agenda, 5000, 'Agenda'),
       status: 'SCHEDULED',
     },
     include: {
@@ -145,11 +146,11 @@ const updateMeeting = async (meetingId, groupId, data) => {
   return prisma.meeting.update({
     where: { id: meetingId },
     data: {
-      ...(data.title && { title: data.title }),
+      ...(data.title !== undefined && { title: sanitizeText(data.title, 200, 'Meeting title') }),
       ...(data.date && { date: new Date(data.date) }),
-      ...(data.location && { location: data.location }),
-      ...(data.agenda && { agenda: data.agenda }),
-      ...(data.minutes && { minutes: data.minutes }),
+      ...(data.location !== undefined && { location: sanitizeText(data.location, 300, 'Location') }),
+      ...(data.agenda !== undefined && { agenda: sanitizeText(data.agenda, 5000, 'Agenda') }),
+      ...(data.minutes !== undefined && { minutes: sanitizeText(data.minutes, 10000, 'Minutes') }),
       ...(data.status && { status: data.status }),
     },
   });
@@ -209,7 +210,7 @@ const recordMinutes = async (meetingId, groupId, minutes) => {
   return prisma.meeting.update({
     where: { id: meetingId },
     data: {
-      minutes,
+      minutes: sanitizeText(minutes, 10000, 'Minutes'),
       status: 'COMPLETED',
     },
   });

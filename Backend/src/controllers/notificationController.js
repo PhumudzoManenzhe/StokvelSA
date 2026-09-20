@@ -7,7 +7,8 @@ const getNotifications = async (req, res, next) => {
       req.user.userId,
       req.query
     );
-    res.json({ success: true, ...result });
+    const { meta, ...data } = result;
+    res.json({ success: true, data, meta });
   } catch (err) {
     next(err);
   }

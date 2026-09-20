@@ -4,9 +4,11 @@ const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const crypto = require('crypto');
 const errorHandler = require('./middleware/errorHandler');
 const { generalLimiter } = require('./middleware/rateLimiter');
 const prisma = require('./config/database');
+const packageInfo = require('../package.json');
 require('./config/env');
 require('dotenv').config();
 
@@ -35,6 +37,7 @@ app.use(
 
 // Performance
 app.use(compression());
+app.use((_req, res, next) => { res.setHeader('X-Request-ID', crypto.randomUUID()); next(); });
 
 // Rate limiting
 app.use(generalLimiter);
@@ -43,6 +46,7 @@ app.use(generalLimiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+// Prisma uses parameterized queries; no Mongo-style operator sanitizer is required for PostgreSQL.
 
 // Health check
 app.get('/health', async (_req, res) => {
@@ -50,8 +54,10 @@ app.get('/health', async (_req, res) => {
     status: 'ok',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    version: '1.0.0',
+    version: packageInfo.version,
     database: 'unknown',
+    uptime: process.uptime(),
+    memoryUsage: process.memoryUsage().heapUsed,
   };
 
   try {
@@ -79,6 +85,7 @@ app.use('/groups/:groupId/meetings', require('./routes/meetings'));
 app.use('/notifications', require('./routes/notifications'));
 app.use('/rates', require('./routes/rates'));
 app.use('/groups/:groupId/analytics', require('./routes/analytics'));
+app.use('/payments', require('./routes/payments'));
 
 // 404
 app.use((_req, res) => {

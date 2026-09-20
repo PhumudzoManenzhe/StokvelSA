@@ -2,6 +2,8 @@
 const app = require('./src/app');
 const { startRateRefreshJob } = require('./src/jobs/rateRefreshJob');
 const { startMeetingReminderJob } = require('./src/jobs/meetingReminderJob');
+const { startContributionReminderJob } = require('./src/jobs/contributionReminderJob');
+const { startMissedContributionJob } = require('./src/jobs/missedContributionJob');
 
 const PORT = process.env.PORT || 3000;
 
@@ -18,6 +20,8 @@ const server = app.listen(PORT, () => {
   ) {
     startRateRefreshJob();
     startMeetingReminderJob();
+    startContributionReminderJob();
+    startMissedContributionJob();
     console.log('Background jobs started');
   }
 });

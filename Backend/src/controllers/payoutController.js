@@ -19,7 +19,8 @@ const getGroupPayouts = async (req, res, next) => {
       req.params.groupId,
       req.query
     );
-    res.json({ success: true, ...result });
+    const { meta, ...data } = result;
+    res.json({ success: true, data, meta });
   } catch (err) {
     next(err);
   }

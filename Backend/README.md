@@ -1,90 +1,60 @@
-1. INITIALIZE NODE.JS
-   npm init -y
+# StokvelSA API
 
-2. INSTALL REQUIRED PACKAGES
-   npm install express prisma @prisma/client dotenv cors helmet \
-   cookie-parser bcryptjs jsonwebtoken express-validator \
-   express-rate-limit multer @supabase/supabase-js \
-   node-cron resend compression winston
+StokvelSA is a Node.js API for managing South African rotating savings groups. It models the practical work of a stokvel: member governance, recurring contributions, payout rotations, meetings, notifications, and payment reconciliation.
 
-3. INSTALL NODEMON,JEST,SUPERTEST,ESLINT,PRETTIER
-   npm install --save-dev nodemon jest supertest eslint prettier \
-   eslint-config-prettier
+## Highlights
 
-4. INITIALIZE PRISMA
-   npx prisma init
+- Role-based group governance for **Administrators**, **Treasurers**, and **Members**.
+- Contribution ledger with pending, confirmed, and missed states.
+- Payout scheduling, attendance, meeting records, analytics exports, and scheduled reminders.
+- Supabase JWT authentication with PostgreSQL persistence through Prisma.
+- PayFast payment initiation and signed Instant Transaction Notification (ITN) handling.
 
-5. BUILD BACKEND FOLDERS(STRUCTURE)
-   mkdir -p src/{config,controllers,middleware,models,routes,services,utils,errors,jobs}
-   mkdir -p tests/{unit,integration}
-   touch src/app.js index.js .env .env.example
+## Architecture
 
-6. ESLint and Prettier
-   touch .eslintrc.json .prettierrc jsconfig.json
+The API follows a layered Express architecture:
 
-7. bACKEND/package.json - Script:
-   {
-   "name": "stokvel-backend",
-   "version": "1.0.0",
-   "scripts": {
-   "start": "node index.js",
-   "dev": "nodemon index.js",
-   "test": "jest --runInBand --detectOpenHandles",
-   "test:watch": "jest --watch",
-   "lint": "eslint src/",
-   "lint:fix": "eslint src/ --fix",
-   "db:migrate": "prisma migrate dev",
-   "db:push": "prisma db push",
-   "db:studio": "prisma studio",
-   "db:seed": "node prisma/seed.js",
-   "db:reset": "prisma migrate reset"
-   },
-   "jest": {
-   "testEnvironment": "node",
-   "testMatch": ["**/tests/**/*.test.js"],
-   "testTimeout": 30000,
-   "setupFiles": ["<rootDir>/tests/setup.js"]
-   }
-   }
+`routes → controllers → services → Prisma/PostgreSQL`
 
-8. .eslintrc.json
-   {
-   "env": {
-   "node": true,
-   "es2022": true,
-   "jest": true
-   },
-   "extends": ["eslint:recommended", "prettier"],
-   "parserOptions": { "ecmaVersion": "latest" },
-   "rules": {
-   "no-console": "warn",
-   "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
-   }
-   }
+Routes validate request data and apply authentication/role middleware. Controllers translate service outcomes to consistent HTTP responses. Services contain business rules, keeping database access and financial workflows separate from HTTP concerns.
 
-9. .prettierrc
-   {
-   "semi": true,
-   "singleQuote": true,
-   "tabWidth": 2,
-   "trailingComma": "es5",
-   "printWidth": 80
-   }
+### Governance and financial separation
 
-10. jsconfig.js
-    {
-    "compilerOptions": {
-    "module": "CommonJS",
-    "target": "ES2020",
-    "checkJs": false
-    },
-    "exclude": ["node_modules"]
-    }
+`GroupMember` stores a role per group rather than a global role. Administrators own group rules—membership, configuration, and payout scheduling—while Treasurers operate the contribution ledger and complete payouts. Members access their own financial history and update attendance. This makes authorization explicit and auditable at the database boundary.
 
-11. Install axios: npm install axios
+## Payment security
 
-12. Install node-cron: npm install node-cron
+PayFast checkout URLs contain contribution amount and group/member/period metadata. The request is protected with PayFast's MD5 signature handshake. On the webhook endpoint, StokvelSA recomputes and timing-safely compares the signature before confirming a contribution or creating a notification. The contribution’s unique `(groupId, memberId, period)` constraint makes webhook retries idempotent.
 
-13. npm install pdfkit csv-writer exceljs
+> The project is configured for the **PayFast Sandbox** environment for demonstration purposes. Do not use real payment credentials in this repository.
 
-14. touch render.yaml
+## Tech stack and rationale
+
+- **Node.js + Express** — lightweight, asynchronous API platform with a mature middleware ecosystem.
+- **Prisma + PostgreSQL (Neon-compatible)** — relational integrity for financial records while remaining serverless-friendly.
+- **Supabase Auth** — delegated identity and JWT verification rather than handling password hashes directly.
+- **PayFast** — a recognisable South African payment workflow, implemented in sandbox mode.
+- **node-cron, EmailJS, PDFKit, Winston** — scheduled jobs, email, exports, and structured logging.
+
+## Getting started
+
+```bash
+cd Backend
+copy .env.example .env
+npm install
+npm run dev
+```
+
+Populate `.env` with your own development values. Never commit it. Start with `PAYFAST_SANDBOX=true`.
+
+Useful commands:
+
+```bash
+npm test
+npm run lint
+npm run db:migrate
+```
+
+## Quality signals
+
+The repository includes focused tests for PayFast URL signing, signature tamper detection, and webhook confirmation behavior. ESLint and Prettier provide an enforceable baseline for a consistent codebase; Winston emits structured JSON logs suitable for local debugging or a hosted log collector.

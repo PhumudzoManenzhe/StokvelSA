@@ -1,6 +1,8 @@
 // @ts-nocheck
 const prisma = require('../config/database');
-const { supabaseAdmin } = require('../config/supabase');
+const { supabaseAdmin, supabase } = require('../config/supabase');
+const { sendWelcomeEmail } = require('./emailService');
+const { sanitizeText } = require('../utils/sanitize');
 const {
   generateInvitationCode,
   getInvitationExpiry,
@@ -53,7 +55,7 @@ const register = async ({ fullName, email, password, phone }) => {
       data: {
         id: data.user.id,
         email,
-        fullName,
+        fullName: sanitizeText(fullName, 100, 'Full name'),
         phone: phone || null,
       },
       select: {
@@ -73,6 +75,7 @@ const register = async ({ fullName, email, password, phone }) => {
     throw err;
   }
 
+  try { await sendWelcomeEmail({ to: user.email, memberName: user.fullName }); } catch (err) { console.error('Failed to send welcome email:', err.message); }
   return { user };
 };
 
@@ -118,7 +121,7 @@ const updateProfile = async (userId, { fullName, phone }) => {
   const user = await prisma.user.update({
     where: { id: userId },
     data: {
-      ...(fullName && { fullName }),
+      ...(fullName !== undefined && { fullName: sanitizeText(fullName, 100, 'Full name') }),
       ...(phone && { phone }),
     },
     select: {
@@ -149,9 +152,17 @@ const deleteAccount = async (userId) => {
   });
 };
 
+const changePassword = async (userId, email, currentPassword, newPassword) => {
+  const { error } = await supabase.auth.signInWithPassword({ email, password: currentPassword });
+  if (error) throw new UnauthorizedError('Current password is incorrect');
+  const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(userId, { password: newPassword });
+  if (updateError) throw new BadRequestError('Unable to update password');
+};
+
 module.exports = {
   register,
   getProfile,
   updateProfile,
   deleteAccount,
+  changePassword,
 };

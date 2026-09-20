@@ -1,5 +1,6 @@
 // @ts-nocheck
 require('dotenv').config();
+const logger = require('./logger');
 
 const required = [
   'DATABASE_URL',
@@ -12,8 +13,7 @@ const required = [
 const missing = required.filter((key) => !process.env[key]);
 
 if (missing.length > 0) {
-  console.error('Missing required environment variables:');
-  missing.forEach((key) => console.error(`   - ${key}`));
+  logger.error('Missing required environment variables', { missing });
   process.exit(1);
 }
 
@@ -35,7 +35,9 @@ module.exports = {
     serviceKey: process.env.SUPABASE_SERVICE_KEY,
   },
   email: {
-    apiKey: process.env.RESEND_API_KEY,
+    apiKey: process.env.EmailJs_API_KEY,
+    serviceId: process.env.EMAILJS_SERVICE_ID,
+    templateId: process.env.EMAILJS_TEMPLATE_ID,
     from: process.env.EMAIL_FROM || 'noreply@stokvelplatform.co.za',
   },
   payfast: {

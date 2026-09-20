@@ -6,6 +6,7 @@ const {
   createGroup,
   getUserGroups,
   getGroup,
+  getGroupMembers,
   updateGroup,
   inviteMember,
   acceptInvitation,
@@ -70,6 +71,7 @@ router.post('/', requireAuth, createGroupRules, validate, createGroup);
 
 // Single group
 router.get('/:groupId', requireAuth, requireGroupMember, getGroup);
+router.get('/:groupId/members', requireAuth, requireGroupMember, getGroupMembers);
 
 router.patch(
   '/:groupId',

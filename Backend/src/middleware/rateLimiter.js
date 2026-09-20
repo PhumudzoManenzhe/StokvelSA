@@ -8,6 +8,8 @@ const generalLimiter = rateLimit({
   max: 100,
   skip,
   message: { success: false, error: 'Too many requests' },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 const authLimiter = rateLimit({
@@ -15,6 +17,8 @@ const authLimiter = rateLimit({
   max: 10,
   skip,
   message: { success: false, error: 'Too many auth attempts' },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 module.exports = { generalLimiter, authLimiter };

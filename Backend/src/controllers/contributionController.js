@@ -27,7 +27,8 @@ const getGroupContributions = async (req, res, next) => {
       req.member.role,
       req.query
     );
-    res.json({ success: true, ...result });
+    const { meta, ...data } = result;
+    res.json({ success: true, data, meta });
   } catch (err) {
     next(err);
   }
@@ -77,7 +78,8 @@ const getMemberHistory = async (req, res, next) => {
       req.params.memberId,
       req.query
     );
-    res.json({ success: true, ...result });
+    const { meta, ...data } = result;
+    res.json({ success: true, data, meta });
   } catch (err) {
     next(err);
   }

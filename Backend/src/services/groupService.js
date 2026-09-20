@@ -11,6 +11,8 @@ const {
   ConflictError,
   BadRequestError,
 } = require('../errors/AppError');
+const { sendGroupInvitation } = require('./emailService');
+const { sanitizeText } = require('../utils/sanitize');
 
 // ─────────────────────────────────────────
 // CREATE GROUP
@@ -28,8 +30,8 @@ const createGroup = async ({
   const result = await prisma.$transaction(async (tx) => {
     const group = await tx.group.create({
       data: {
-        name,
-        description,
+        name: sanitizeText(name, 100, 'Group name'),
+        description: description == null ? null : sanitizeText(description, 2000, 'Description'),
         contributionAmount,
         contributionFrequency: contributionFrequency || 'MONTHLY',
         payoutOrder: payoutOrder || 'FIXED',
@@ -147,6 +149,16 @@ const getGroup = async (groupId, userId) => {
   return group;
 };
 
+const getGroupMembers = async (groupId, query) => {
+  const { page, limit, skip } = getPagination(query);
+  const where = { groupId, isActive: true };
+  const [members, total] = await Promise.all([
+    prisma.groupMember.findMany({ where, select: { id: true, role: true, payoutPosition: true, joinedAt: true, user: { select: { id: true, fullName: true, email: true, phone: true, avatarUrl: true } } }, orderBy: { payoutPosition: 'asc' }, skip, take: limit }),
+    prisma.groupMember.count({ where }),
+  ]);
+  return { members, meta: getPaginationMeta(total, page, limit) };
+};
+
 // ─────────────────────────────────────────
 // UPDATE GROUP
 // Only ADMIN can update
@@ -158,8 +170,8 @@ const updateGroup = async (groupId, data) => {
   const updated = await prisma.group.update({
     where: { id: groupId },
     data: {
-      ...(data.name && { name: data.name }),
-      ...(data.description && { description: data.description }),
+      ...(data.name !== undefined && { name: sanitizeText(data.name, 100, 'Group name') }),
+      ...(data.description !== undefined && { description: sanitizeText(data.description, 2000, 'Description') }),
       ...(data.contributionAmount && {
         contributionAmount: data.contributionAmount,
       }),
@@ -227,8 +239,8 @@ const inviteMember = async ({ groupId, email, role, invitedById }) => {
     },
   });
 
-  // TODO: send invitation email
-  // await emailService.sendGroupInvitation({ email, group, code })
+  const inviter = await prisma.user.findUnique({ where: { id: invitedById }, select: { fullName: true } });
+  try { await sendGroupInvitation({ to: email, groupName: group.name, inviterName: inviter?.fullName || 'A StokvelSA member', code, expiresAt: invitation.expiresAt }); } catch (err) { console.error('Failed to send invitation email:', err.message); }
 
   return { invitation, code };
 };
@@ -342,6 +354,7 @@ module.exports = {
   createGroup,
   getUserGroups,
   getGroup,
+  getGroupMembers,
   updateGroup,
   inviteMember,
   acceptInvitation,

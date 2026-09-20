@@ -16,7 +16,8 @@ const createGroup = async (req, res, next) => {
 const getUserGroups = async (req, res, next) => {
   try {
     const result = await groupService.getUserGroups(req.user.userId, req.query);
-    res.json({ success: true, ...result });
+    const { meta, ...data } = result;
+    res.json({ success: true, data, meta });
   } catch (err) {
     next(err);
   }
@@ -32,6 +33,13 @@ const getGroup = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+const getGroupMembers = async (req, res, next) => {
+  try {
+    const result = await groupService.getGroupMembers(req.params.groupId, req.query);
+    res.json({ success: true, data: { members: result.members }, meta: result.meta });
+  } catch (err) { next(err); }
 };
 
 const updateGroup = async (req, res, next) => {
@@ -99,6 +107,7 @@ module.exports = {
   createGroup,
   getUserGroups,
   getGroup,
+  getGroupMembers,
   updateGroup,
   inviteMember,
   acceptInvitation,

@@ -7,6 +7,7 @@ const {
   getProfile,
   updateProfile,
   deleteAccount,
+  changePassword,
 } = require('../controllers/authController');
 const { requireAuth } = require('../middleware/auth');
 const { authLimiter } = require('../middleware/rateLimiter');
@@ -55,6 +56,7 @@ router.post('/register', authLimiter, registerRules, validate, register);
 // Protected routes
 router.get('/me', requireAuth, getProfile);
 router.patch('/me', requireAuth, updateRules, validate, updateProfile);
+router.patch('/password', requireAuth, [body('currentPassword').notEmpty(), body('newPassword').isLength({ min: 8 }).matches(/[A-Z]/).matches(/[0-9]/)], validate, changePassword);
 router.delete('/account', requireAuth, deleteAccount);
 
 module.exports = router;
