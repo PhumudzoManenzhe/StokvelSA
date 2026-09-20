@@ -1,101 +1,14 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import useAuthStore from "../../stores/authStore";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { ArrowRight, Eye, EyeOff } from 'lucide-react';
+import useAuthStore from '../../stores/authStore';
+import AuthLayout from '../../components/layout/AuthLayout';
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
-  const login = useAuthStore((s) => s.login);
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      await login(form);
-      toast.success("Welcome back!");
-      navigate("/dashboard");
-    } catch (err) {
-      toast.error(err.message || "Invalid email or password");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <>
-      <h2 className="text-2xl font-bold text-gray-900 mb-1">Welcome back</h2>
-      <p className="text-gray-500 text-sm mb-6">Sign in to your account</p>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="label" htmlFor="email">
-            Email address
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            autoComplete="email"
-            className="input"
-            placeholder="alice@example.com"
-            value={form.email}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label className="label" htmlFor="password">
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            autoComplete="current-password"
-            className="input"
-            placeholder="••••••••"
-            value={form.password}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span />
-          <Link
-            to="/forgot-password"
-            className="text-sm text-primary-600 hover:text-primary-700 font-medium"
-          >
-            Forgot password?
-          </Link>
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="btn-primary w-full py-2.5"
-        >
-          {loading ? "Signing in..." : "Sign in"}
-        </button>
-      </form>
-
-      <p className="text-center text-sm text-gray-500 mt-6">
-        Don't have an account?{" "}
-        <Link
-          to="/register"
-          className="text-primary-600 font-medium hover:text-primary-700"
-        >
-          Create one
-        </Link>
-      </p>
-    </>
-  );
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false); const [visible, setVisible] = useState(false);
+  const login = useAuthStore(s => s.login); const navigate = useNavigate();
+  const submit = async event => { event.preventDefault(); setLoading(true); try { await login(form); toast.success('Sawubona! Welcome back to your community.'); navigate('/dashboard'); } catch { toast.error('We could not sign you in. Please check your details and try again.'); } finally { setLoading(false); } };
+  return <AuthLayout image="https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?w=800" greeting="Sawubona" title="Welcome back to your community"><p className="text-sm font-semibold text-primary-700">Welcome back</p><h2 className="mt-2 text-3xl font-bold tracking-tight text-stone-900">Sign in to StokvelSA</h2><p className="mt-2 text-sm leading-6 text-stone-600">Your savings community is waiting for you.</p><form onSubmit={submit} className="mt-8 space-y-5"><div><label className="label text-stone-700" htmlFor="email">Email address</label><input className="input border-stone-300 py-3" id="email" name="email" type="email" autoComplete="email" required placeholder="you@example.com" value={form.email} onChange={e => setForm({...form, email: e.target.value})}/></div><div><div className="mb-1 flex items-center justify-between"><label className="label mb-0 text-stone-700" htmlFor="password">Password</label><Link className="text-xs font-semibold text-primary-700 hover:text-primary-800" to="/forgot-password">Forgot password?</Link></div><div className="relative"><input className="input border-stone-300 py-3 pr-11" id="password" name="password" type={visible ? 'text' : 'password'} autoComplete="current-password" required placeholder="Your password" value={form.password} onChange={e => setForm({...form, password: e.target.value})}/><button aria-label={visible ? 'Hide password' : 'Show password'} type="button" onClick={() => setVisible(!visible)} className="absolute right-3 top-3 text-stone-400">{visible ? <EyeOff size={18}/> : <Eye size={18}/>}</button></div></div><button disabled={loading} className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-700 disabled:opacity-60">{loading ? 'Signing you in...' : <>Sign in <ArrowRight size={17}/></>}</button></form><p className="mt-8 text-center text-sm text-stone-600">New to StokvelSA? <Link className="font-semibold text-primary-700" to="/register">Create an account</Link></p></AuthLayout>;
 }

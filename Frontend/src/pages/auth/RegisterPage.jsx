@@ -1,162 +1,43 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import useAuthStore from "../../stores/authStore";
+import { useMemo, useState } from 'react';
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import useAuthStore from '../../stores/authStore';
+import AuthLayout from '../../components/layout/AuthLayout';
+
+function Input({ label, name, type, placeholder, optional = false, value, onChange }) {
+  return <div><label htmlFor={name} className="label text-stone-700">{label}{optional && <span className="ml-1 font-normal text-stone-400">(optional)</span>}</label><input id={name} name={name} type={type} required={!optional} className="input border-stone-300 py-3" placeholder={placeholder} value={value} onChange={onChange}/></div>;
+}
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    confirm: "",
-    phone: "",
-  });
+  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const register = useAuthStore((s) => s.register);
+  const [form, setForm] = useState({ fullName: '', email: '', phone: '', password: '', confirm: '' });
+  const register = useAuthStore(s => s.register);
   const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const strength = useMemo(() => [form.password.length >= 8, /[A-Z]/.test(form.password), /\d/.test(form.password)].filter(Boolean).length, [form.password]);
+  const update = event => setForm({ ...form, [event.target.name]: event.target.value });
+  const next = () => {
+    if (!form.fullName.trim() || !/^\S+@\S+\.\S+$/.test(form.email)) return toast.error('Please enter your name and a valid email address.');
+    if (form.phone && !/^\+27\d{9}$/.test(form.phone)) return toast.error('Use +27 followed by 9 digits for your phone number.');
+    setStep(2);
   };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (form.password !== form.confirm) {
-      toast.error("Passwords do not match");
-      return;
-    }
-
-    if (form.password.length < 8) {
-      toast.error("Password must be at least 8 characters");
-      return;
-    }
-
+  const submit = async event => {
+    event.preventDefault();
+    if (form.password !== form.confirm) return toast.error('Your passwords do not match.');
+    if (strength < 3) return toast.error('Choose a stronger password with 8 characters, a capital letter, and a number.');
     setLoading(true);
-
-    try {
-      await register({
-        fullName: form.fullName,
-        email: form.email,
-        password: form.password,
-        phone: form.phone || undefined,
-      });
-      toast.success("Account created successfully!");
-      navigate("/dashboard");
-    } catch (err) {
-      toast.error(
-        err.response?.data?.error || err.message || "Registration failed",
-      );
-    } finally {
-      setLoading(false);
-    }
+    try { await register(form); toast.success('Sawubona! Welcome to StokvelSA.'); navigate('/dashboard'); }
+    catch { toast.error('We could not create your account. Please try again.'); }
+    finally { setLoading(false); }
   };
+  const inputProps = name => ({ value: form[name], onChange: update });
+  const levels = ['Too short', 'Weak', 'Medium', 'Strong']; const colors = ['bg-stone-200', 'bg-red-500', 'bg-amber-400', 'bg-emerald-500'];
 
-  return (
-    <>
-      <h2 className="text-2xl font-bold text-gray-900 mb-1">Create account</h2>
-      <p className="text-gray-500 text-sm mb-6">
-        Start managing your stokvel today
-      </p>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="label" htmlFor="fullName">
-            Full name
-          </label>
-          <input
-            id="fullName"
-            name="fullName"
-            type="text"
-            required
-            className="input"
-            placeholder="Alice Dlamini"
-            value={form.fullName}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label className="label" htmlFor="email">
-            Email address
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            className="input"
-            placeholder="alice@example.com"
-            value={form.email}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label className="label" htmlFor="phone">
-            Phone number <span className="text-gray-400">(optional)</span>
-          </label>
-          <input
-            id="phone"
-            name="phone"
-            type="tel"
-            className="input"
-            placeholder="+27821234567"
-            value={form.phone}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label className="label" htmlFor="password">
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            className="input"
-            placeholder="Min 8 characters"
-            value={form.password}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label className="label" htmlFor="confirm">
-            Confirm password
-          </label>
-          <input
-            id="confirm"
-            name="confirm"
-            type="password"
-            required
-            className="input"
-            placeholder="Repeat password"
-            value={form.confirm}
-            onChange={handleChange}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="btn-primary w-full py-2.5"
-        >
-          {loading ? "Creating account..." : "Create account"}
-        </button>
-      </form>
-
-      <p className="text-center text-sm text-gray-500 mt-6">
-        Already have an account?{" "}
-        <Link
-          to="/login"
-          className="text-primary-600 font-medium hover:text-primary-700"
-        >
-          Sign in
-        </Link>
-      </p>
-    </>
-  );
+  return <AuthLayout image="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800" greeting="Ndaa" title="Build more, together.">
+    <div className="mb-8"><div className="flex items-center gap-3 text-xs font-semibold"><span className={step === 1 ? 'text-primary-700' : 'text-emerald-600'}>{step > 1 ? <Check size={16}/> : '01'} Personal details</span><span className="h-px flex-1 bg-stone-200"/><span className={step === 2 ? 'text-primary-700' : 'text-stone-400'}>02 Security</span></div><div className="mt-5"><p className="text-sm font-semibold text-primary-700">Join the community</p><h2 className="mt-2 text-3xl font-bold tracking-tight">{step === 1 ? 'Let’s get to know you.' : 'Choose a secure password.'}</h2><p className="mt-2 text-sm text-stone-600">{step === 1 ? 'You are only a few steps from your first stokvel.' : 'A strong password keeps your group’s records protected.'}</p></div></div>
+    <form onSubmit={submit} className="space-y-5">
+      {step === 1 ? <><Input label="Full name" name="fullName" type="text" placeholder="Your name" {...inputProps('fullName')}/><Input label="Email address" name="email" type="email" placeholder="you@example.com" {...inputProps('email')}/><Input label="South African phone" name="phone" type="tel" placeholder="+27821234567" optional {...inputProps('phone')}/><button type="button" onClick={next} className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 py-3 text-sm font-semibold text-white hover:bg-primary-700">Continue <ArrowRight size={17}/></button></> : <><Input label="Password" name="password" type="password" placeholder="At least 8 characters" {...inputProps('password')}/>{form.password && <div><div className="flex gap-1">{[1,2,3].map(number => <span key={number} className={`h-1.5 flex-1 rounded ${strength >= number ? colors[strength] : 'bg-stone-200'}`}/>)}</div><p className="mt-1.5 text-xs text-stone-500">Password strength: <span className="font-semibold">{levels[strength]}</span></p></div>}<Input label="Confirm password" name="confirm" type="password" placeholder="Repeat your password" {...inputProps('confirm')}/><div className="flex gap-3"><button type="button" onClick={() => setStep(1)} className="inline-flex items-center gap-1 rounded-xl border border-stone-300 px-4 py-3 text-sm font-semibold text-stone-700"><ArrowLeft size={16}/> Back</button><button disabled={loading} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary-600 py-3 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-60">{loading ? 'Creating account...' : <>Create account <ArrowRight size={17}/></>}</button></div></>}
+    </form><p className="mt-8 text-center text-sm text-stone-600">Already a member? <Link className="font-semibold text-primary-700" to="/login">Sign in</Link></p>
+  </AuthLayout>;
 }

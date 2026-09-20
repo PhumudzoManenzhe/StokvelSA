@@ -1,14 +1,9 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import useAuthStore from "../../stores/authStore";
 import {
   LayoutDashboard,
   Users,
-  Wallet,
-  CreditCard,
-  CalendarDays,
-  BarChart3,
   Bell,
   User,
   LogOut,

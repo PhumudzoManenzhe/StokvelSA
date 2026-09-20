@@ -1,4 +1,4 @@
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   Wallet,
@@ -6,7 +6,6 @@ import {
   CalendarDays,
   BarChart3,
   Users,
-  Plus,
   Mail,
 } from "lucide-react";
 import api from "../../lib/api";

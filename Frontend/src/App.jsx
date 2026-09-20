@@ -7,6 +7,9 @@ import LoadingScreen from "./components/ui/LoadingScreen";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import LandingPage from "./pages/LandingPage";
+import DashboardPage from "./pages/dashboard/DashboardPage";
+import AppLayout from "./components/layout/AppLayout";
 
 // Route guard
 const ProtectedRoute = ({ children }) => {
@@ -28,12 +31,12 @@ export default function App() {
 
   useEffect(() => {
     initialize();
-  }, []);
+  }, [initialize]);
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
         <Route
           path="/login"
           element={
@@ -61,26 +64,7 @@ export default function App() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
-              <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-                <div className="card max-w-md w-full text-center">
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                    Dashboard coming soon
-                  </h1>
-                  <p className="text-sm text-gray-500 mb-6">
-                    The auth pages are working, and the dashboard shell can be
-                    added next.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => useAuthStore.getState().logout()}
-                    className="btn-secondary w-full py-2.5"
-                  >
-                    Sign out
-                  </button>
-                </div>
-              </div>
-            </ProtectedRoute>
+            <ProtectedRoute><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>
           }
         />
         <Route path="*" element={<Navigate to="/login" replace />} />

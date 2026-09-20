@@ -19,6 +19,7 @@ export default {
         success: "#16a34a",
         warning: "#d97706",
         danger: "#dc2626",
+        warm: { background: "#FAFAF9", text: "#1C1917", muted: "#78716C", border: "#E7E5E4", gold: "#F59E0B" },
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],

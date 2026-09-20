@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 
-export default function AppLayout() {
+export default function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -16,7 +15,7 @@ export default function AppLayout() {
         <Header onMenuClick={() => setSidebarOpen(true)} />
 
         <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          <Outlet />
+          {children}
         </main>
       </div>
     </div>

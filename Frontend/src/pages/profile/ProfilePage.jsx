@@ -1,13 +1,12 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { User, Phone, Mail } from "lucide-react";
 import api from "../../lib/api";
 import useAuthStore from "../../stores/authStore";
 
 export default function ProfilePage() {
-  const { profile, fetchProfile, logout } = useAuthStore();
-  const queryClient = useQueryClient();
+  const { profile, fetchProfile } = useAuthStore();
 
   const [form, setForm] = useState({
     fullName: profile?.fullName || "",

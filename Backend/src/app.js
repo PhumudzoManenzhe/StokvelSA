@@ -7,10 +7,9 @@ const compression = require('compression');
 const crypto = require('crypto');
 const errorHandler = require('./middleware/errorHandler');
 const { generalLimiter } = require('./middleware/rateLimiter');
+require('./config/env');
 const prisma = require('./config/database');
 const packageInfo = require('../package.json');
-require('./config/env');
-require('dotenv').config();
 
 const app = express();
 
