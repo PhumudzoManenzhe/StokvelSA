@@ -26,12 +26,6 @@ module.exports = {
     env: process.env.NODE_ENV || 'development',
     isProd: process.env.NODE_ENV === 'production',
   },
-  auth: {
-    jwtSecret: process.env.JWT_SECRET,
-    jwtExpiry: process.env.JWT_EXPIRY || '15m',
-    refreshSecret: process.env.REFRESH_SECRET,
-    refreshExpiry: process.env.REFRESH_EXPIRY || '30d',
-  },
   supabase: {
     url: process.env.SUPABASE_URL,
     anonKey: process.env.SUPABASE_ANON_KEY,
