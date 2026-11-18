@@ -3,6 +3,45 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
+// Every request is authenticated by verifying a Supabase access token and then
+// looking the profile up by the token's subject. A profile therefore only works
+// if its id is the Supabase user id, which is why the demo people have to exist
+// in Supabase Auth and not merely in this database.
+const DEMO_PASSWORD = process.env.SEED_PASSWORD || 'Stokvel2026!';
+
+const supabaseReady = Boolean(
+  process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY
+);
+
+// Creates the auth identity if it is missing, and reuses it if a previous run
+// already made one, so seeding twice does not leave orphaned profiles behind.
+const ensureAuthUser = async (supabaseAdmin, { email, fullName }) => {
+  const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    email,
+    password: DEMO_PASSWORD,
+    email_confirm: true,
+    user_metadata: { full_name: fullName },
+  });
+
+  if (!error) return data.user;
+
+  const message = (error.message || '').toLowerCase();
+  if (message.includes('already')) {
+    const { data: existing } = await supabaseAdmin.auth.admin.listUsers({
+      page: 1,
+      perPage: 1000,
+    });
+
+    const match = (existing?.users || []).find(
+      (user) => (user.email || '').toLowerCase() === email.toLowerCase()
+    );
+
+    if (match) return match;
+  }
+
+  throw error;
+};
+
 async function main() {
   console.log('Seeding database...');
 
@@ -19,34 +58,61 @@ async function main() {
   await prisma.user.deleteMany();
 
   // Create test users
-  // NOTE: passwords are managed by Supabase Auth
-  // These are just profile records in our DB
-  const alice = await prisma.user.create({
-    data: {
-      id: 'test-user-alice-001',
+  // Passwords are managed by Supabase Auth; these rows are the profiles that the
+  // API attaches to the verified token.
+  let supabaseAdmin = null;
+  if (supabaseReady) {
+    ({ supabaseAdmin } = require('../src/config/supabase'));
+  } else {
+    console.warn(
+      '\n  SUPABASE_URL and SUPABASE_SERVICE_KEY are not set, so no auth identities\n' +
+        '  can be created. The demo profiles below will exist in the database only\n' +
+        '  and will NOT be able to sign in. Set both and re-run to fix that.\n'
+    );
+  }
+
+  const demoPeople = [
+    {
+      key: 'alice',
+      placeholderId: 'test-user-alice-001',
       email: 'alice@stokvel.com',
       fullName: 'Alice Dlamini',
       phone: '+27821234567',
     },
-  });
-
-  const bob = await prisma.user.create({
-    data: {
-      id: 'test-user-bob-002',
+    {
+      key: 'bob',
+      placeholderId: 'test-user-bob-002',
       email: 'bob@stokvel.com',
       fullName: 'Bob Nkosi',
       phone: '+27831234567',
     },
-  });
-
-  const carol = await prisma.user.create({
-    data: {
-      id: 'test-user-carol-003',
+    {
+      key: 'carol',
+      placeholderId: 'test-user-carol-003',
       email: 'carol@stokvel.com',
       fullName: 'Carol Mokoena',
       phone: '+27841234567',
     },
-  });
+  ];
+
+  const people = {};
+
+  for (const person of demoPeople) {
+    const authUser = supabaseAdmin
+      ? await ensureAuthUser(supabaseAdmin, person)
+      : null;
+
+    people[person.key] = await prisma.user.create({
+      data: {
+        id: authUser ? authUser.id : person.placeholderId,
+        email: person.email,
+        fullName: person.fullName,
+        phone: person.phone,
+      },
+    });
+  }
+
+  const { alice, bob, carol } = people;
 
   console.log('Users created');
 
@@ -174,11 +240,18 @@ async function main() {
 
   console.log('Interest rates seeded');
 
-  console.log('\n Seed complete!');
-  console.log('\n Test accounts:');
-  console.log('   alice@stokvel.com (Admin)');
-  console.log('   bob@stokvel.com   (Treasurer)');
-  console.log('   carol@stokvel.com (Member)');
+  console.log('\nSeed complete!');
+
+  if (supabaseReady) {
+    console.log(`\nDemo accounts, all with the password: ${DEMO_PASSWORD}`);
+    console.log('   alice@stokvel.com  (Admin)');
+    console.log('   bob@stokvel.com    (Treasurer)');
+    console.log('   carol@stokvel.com  (Member)');
+    console.log('\nSet SEED_PASSWORD before re-running to choose a different one.');
+  } else {
+    console.log('\nThe demo profiles have no auth identities, so nobody can sign in');
+    console.log('yet. Set SUPABASE_URL and SUPABASE_SERVICE_KEY and run this again.');
+  }
 }
 
 main()
