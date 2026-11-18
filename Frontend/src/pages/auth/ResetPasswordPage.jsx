@@ -68,7 +68,8 @@ export default function ResetPasswordPage() {
 
   return (
     <AuthLayout
-      image="https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?w=800"
+      image="/images/auth-login.jpg"
+      imageAlt="A woman reading something on her phone in the late afternoon sun"
       greeting="Sawubona"
       title="Set a new password."
     >
