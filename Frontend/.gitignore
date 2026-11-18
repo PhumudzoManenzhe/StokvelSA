@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Environment — real keys must never be committed. This file previously
+# ignored nothing here, so a populated .env would have been staged by `git add .`.
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
