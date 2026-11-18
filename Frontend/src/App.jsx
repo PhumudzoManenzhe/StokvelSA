@@ -12,6 +12,7 @@ import DashboardPage from "./pages/dashboard/DashboardPage";
 import GroupsPage from "./pages/groups/GroupsPage";
 import CreateGroupPage from "./pages/groups/CreateGroupPage";
 import GroupDetailPage from "./pages/groups/GroupDetailPage";
+import JoinGroupPage from "./pages/groups/JoinGroupPage";
 import ContributionsPage from "./pages/contributions/ContributionsPage";
 import PayoutsPage from "./pages/payouts/PayoutsPage";
 import MeetingsPage from "./pages/meetings/MeetingsPage";
@@ -149,6 +150,14 @@ export default function App() {
           element={
             <Protected>
               <AnalyticsPage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/join"
+          element={
+            <Protected>
+              <JoinGroupPage />
             </Protected>
           }
         />
