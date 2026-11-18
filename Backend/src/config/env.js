@@ -2,11 +2,14 @@
 require('dotenv').config();
 const logger = require('./logger');
 
+// Supabase is the only identity provider: access tokens are verified against it
+// and passwords are changed through it, so both Supabase keys are required. No
+// JWT is signed or verified locally, which is why JWT_SECRET and REFRESH_SECRET
+// are no longer checked here.
 const required = [
   'DATABASE_URL',
-  'JWT_SECRET',
-  'REFRESH_SECRET',
   'SUPABASE_URL',
+  'SUPABASE_ANON_KEY',
   'SUPABASE_SERVICE_KEY',
 ];
 
