@@ -9,3 +9,24 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+
+      # The API exits at startup if any of these four are absent, so they are
+      # declared here to make the requirement visible before a deploy runs.
+      # sync: false means Render prompts for the value instead of storing it in
+      # this file, which matters most for the Supabase service key.
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+
+      # Where invitation and password-reset links point back to.
+      - key: FRONTEND_URL
+        sync: false
+
+      # Scheduled work — rate refresh, meeting and contribution reminders, missed
+      # contributions — starts automatically because NODE_ENV is production, so
+      # there is no separate flag to set here.
