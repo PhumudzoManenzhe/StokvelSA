@@ -12,7 +12,7 @@ export default function ContributionsPage() {
     queryKey: ["contributions", id],
     queryFn: async () => {
       const res = await api.get(`/groups/${id}/contributions`);
-      return res.data;
+      return res.data.data;
     },
   });
 

@@ -12,7 +12,7 @@ export default function PayoutsPage() {
     queryKey: ["payouts", id],
     queryFn: async () => {
       const res = await api.get(`/groups/${id}/payouts`);
-      return res.data;
+      return res.data.data;
     },
   });
 

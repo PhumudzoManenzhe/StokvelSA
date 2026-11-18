@@ -13,7 +13,7 @@ export default function GroupsPage() {
     queryKey: ["groups"],
     queryFn: async () => {
       const res = await api.get("/groups");
-      return res.data;
+      return res.data.data;
     },
   });
 

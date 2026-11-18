@@ -13,7 +13,7 @@ export default function MeetingsPage() {
     queryKey: ["meetings", id],
     queryFn: async () => {
       const res = await api.get(`/groups/${id}/meetings`);
-      return res.data;
+      return res.data.data;
     },
   });
 

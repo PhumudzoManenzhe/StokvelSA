@@ -15,7 +15,7 @@ export default function DashboardPage() {
     queryKey: ["groups"],
     queryFn: async () => {
       const res = await api.get("/groups");
-      return res.data;
+      return res.data.data;
     },
   });
 
