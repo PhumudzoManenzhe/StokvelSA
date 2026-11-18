@@ -3,6 +3,7 @@ import { Bell, Check } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import api from "../../lib/api";
 import Spinner from "../../components/ui/Spinner";
+import EmptyState from "../../components/ui/EmptyState";
 
 export default function NotificationsPage() {
   const queryClient = useQueryClient();
@@ -40,13 +41,17 @@ export default function NotificationsPage() {
     );
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
-      <div className="flex items-center justify-between">
+    <div className="mx-auto max-w-2xl space-y-6">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Notifications</h2>
-          {unreadCount > 0 && (
-            <p className="text-sm text-gray-500">{unreadCount} unread</p>
-          )}
+          <h2 className="font-display text-xl font-semibold text-stone-900">
+            Notifications
+          </h2>
+          <p className="text-sm text-stone-500">
+            {unreadCount > 0
+              ? `${unreadCount} still unread`
+              : "You are all caught up"}
+          </p>
         </div>
         {unreadCount > 0 && (
           <button
@@ -61,41 +66,56 @@ export default function NotificationsPage() {
 
       <div className="space-y-2">
         {notifications.length === 0 ? (
-          <div className="card text-center py-12">
-            <Bell size={40} className="mx-auto text-gray-300 mb-3" />
-            <p className="text-gray-500">No notifications yet</p>
+          <div className="card">
+            <EmptyState
+              icon={Bell}
+              title="Nothing here yet"
+              description="When someone invites you, adds a contribution or schedules a meeting, it will appear here."
+            />
           </div>
         ) : (
-          notifications.map((n) => (
-            <div
-              key={n.id}
-              onClick={() => !n.read && markRead(n.id)}
-              className={`card cursor-pointer transition-colors ${
-                !n.read
-                  ? "border-l-4 border-l-primary-500 bg-primary-50/30"
-                  : "hover:bg-gray-50"
+          notifications.map((notification) => (
+            /* A row that reacts to a click has to be reachable from the
+               keyboard too, so it is a button rather than a div. */
+            <button
+              key={notification.id}
+              type="button"
+              onClick={() => !notification.read && markRead(notification.id)}
+              disabled={notification.read}
+              className={`w-full rounded-xl border px-4 py-3 text-left transition-colors ${
+                notification.read
+                  ? "cursor-default border-stone-200/70 bg-white"
+                  : "border-stone-200/70 bg-white hover:border-primary-200 hover:bg-primary-50/40"
               }`}
             >
               <div className="flex items-start gap-3">
                 <div
-                  className={`w-2 h-2 rounded-full mt-2 shrink-0 ${
-                    n.read ? "bg-gray-200" : "bg-primary-500"
+                  className={`mt-2 h-2 w-2 shrink-0 rounded-full ${
+                    notification.read ? "bg-stone-200" : "bg-primary-600"
                   }`}
+                  aria-hidden="true"
                 />
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 flex-1">
                   <p
-                    className={`text-sm ${n.read ? "text-gray-600" : "text-gray-900 font-medium"}`}
+                    className={`text-sm ${
+                      notification.read
+                        ? "text-stone-600"
+                        : "font-medium text-stone-900"
+                    }`}
                   >
-                    {n.message}
+                    {notification.message}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {formatDistanceToNow(new Date(n.createdAt), {
+                  <p className="mt-1 text-xs text-stone-500">
+                    {formatDistanceToNow(new Date(notification.createdAt), {
                       addSuffix: true,
                     })}
+                    {!notification.read && (
+                      <span className="sr-only"> — unread</span>
+                    )}
                   </p>
                 </div>
               </div>
-            </div>
+            </button>
           ))
         )}
       </div>
