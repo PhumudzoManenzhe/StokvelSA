@@ -1,26 +1,31 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import useAuthStore from "./stores/authStore";
 import LoadingScreen from "./components/ui/LoadingScreen";
 
-// Pages
+// Entry pages load with the shell, because they are the first thing a visitor
+// sees and a spinner there is worse than the few kilobytes they cost.
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import LandingPage from "./pages/LandingPage";
-import DashboardPage from "./pages/dashboard/DashboardPage";
-import GroupsPage from "./pages/groups/GroupsPage";
-import CreateGroupPage from "./pages/groups/CreateGroupPage";
-import GroupDetailPage from "./pages/groups/GroupDetailPage";
-import JoinGroupPage from "./pages/groups/JoinGroupPage";
-import ContributionsPage from "./pages/contributions/ContributionsPage";
-import PayoutsPage from "./pages/payouts/PayoutsPage";
-import MeetingsPage from "./pages/meetings/MeetingsPage";
-import AnalyticsPage from "./pages/analytics/AnalyticsPage";
-import NotificationsPage from "./pages/notifications/NotificationsPage";
-import ProfilePage from "./pages/profile/ProfilePage";
 import AppLayout from "./components/layout/AppLayout";
+
+// Everything behind the sign-in wall is split into its own chunk. Loading all of
+// it up front put every chart, table and form in one bundle; a visitor who only
+// wanted the landing page paid for the analytics dashboard.
+const DashboardPage = lazy(() => import("./pages/dashboard/DashboardPage"));
+const GroupsPage = lazy(() => import("./pages/groups/GroupsPage"));
+const CreateGroupPage = lazy(() => import("./pages/groups/CreateGroupPage"));
+const GroupDetailPage = lazy(() => import("./pages/groups/GroupDetailPage"));
+const JoinGroupPage = lazy(() => import("./pages/groups/JoinGroupPage"));
+const ContributionsPage = lazy(() => import("./pages/contributions/ContributionsPage"));
+const PayoutsPage = lazy(() => import("./pages/payouts/PayoutsPage"));
+const MeetingsPage = lazy(() => import("./pages/meetings/MeetingsPage"));
+const AnalyticsPage = lazy(() => import("./pages/analytics/AnalyticsPage"));
+const NotificationsPage = lazy(() => import("./pages/notifications/NotificationsPage"));
+const ProfilePage = lazy(() => import("./pages/profile/ProfilePage"));
 
 // Route guard
 const ProtectedRoute = ({ children }) => {
@@ -49,9 +54,13 @@ const PublicRoute = ({ children }) => {
 
 // Signed-in pages all share the sidebar and header, so the guard and the shell
 // are applied once here instead of being repeated around every route element.
+// Every page that is fetched on demand sits inside this boundary, which keeps the
+// navigation in place while only the content area waits.
 const Protected = ({ children }) => (
   <ProtectedRoute>
-    <AppLayout>{children}</AppLayout>
+    <AppLayout>
+      <Suspense fallback={<LoadingScreen />}>{children}</Suspense>
+    </AppLayout>
   </ProtectedRoute>
 );
 
