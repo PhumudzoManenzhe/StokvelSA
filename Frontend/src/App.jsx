@@ -7,6 +7,7 @@ import LoadingScreen from "./components/ui/LoadingScreen";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import LandingPage from "./pages/LandingPage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import GroupsPage from "./pages/groups/GroupsPage";
@@ -89,6 +90,9 @@ export default function App() {
             </PublicRoute>
           }
         />
+        {/* Not wrapped in PublicRoute: a recovery link signs the user in, and
+            PublicRoute would redirect them away before they set a password. */}
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route
           path="/dashboard"
           element={

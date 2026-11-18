@@ -18,6 +18,11 @@ const createMockSupabase = () => ({
         "Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to enable auth.",
       );
     },
+    updateUser: async () => ({
+      error: new Error(
+        "Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to enable auth.",
+      ),
+    }),
     refreshSession: async () => ({ data: { session: null } }),
   },
 });
