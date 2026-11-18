@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { Banknote } from "lucide-react";
 import api from "../../lib/api";
 import Spinner from "../../components/ui/Spinner";
 import Badge from "../../components/ui/Badge";
+import EmptyState from "../../components/ui/EmptyState";
 import { format } from "date-fns";
 
 export default function PayoutsPage() {
@@ -73,7 +75,16 @@ export default function PayoutsPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold text-gray-900">Payouts</h2>
+      <div>
+        <h2 className="font-display text-xl font-semibold text-stone-900">
+          Payouts
+        </h2>
+        <p className="text-sm text-stone-600">
+          {isAdmin
+            ? "The pot goes to one member at a time. Schedule each payout here and mark it settled once the money has moved."
+            : "Who has been paid, and who is still waiting."}
+        </p>
+      </div>
 
       {/* Only an administrator may schedule a payout, which is why this form is
           gated on the role rather than on the endpoint refusing it. */}
@@ -144,56 +155,61 @@ export default function PayoutsPage() {
       )}
 
       <div className="card">
-        <div className="space-y-3">
-          {payouts.length === 0 ? (
-            <p className="text-center text-gray-400 py-8">
-              No payouts scheduled yet
-            </p>
-          ) : (
-            payouts.map((p) => (
+        {payouts.length === 0 ? (
+          <EmptyState
+            icon={Banknote}
+            title="No payouts yet"
+            description={
+              isAdmin
+                ? "Choose who receives the pot next and when, using the form above."
+                : "When your administrator schedules the next payout, it will appear here with its date."
+            }
+          />
+        ) : (
+          <div className="space-y-1">
+            {payouts.map((payout) => (
               <div
-                key={p.id}
-                className="flex items-center justify-between
-                                         py-3 border-b border-gray-50 last:border-0"
+                key={payout.id}
+                className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 py-3 last:border-0"
               >
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {p.recipient?.fullName}
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-stone-900">
+                    {payout.recipient?.fullName}
                   </p>
-                  <p className="text-xs text-gray-400">
-                    {format(new Date(p.scheduledDate), "dd MMM yyyy")}
+                  <p className="text-xs text-stone-500">
+                    {format(new Date(payout.scheduledDate), "dd MMM yyyy")}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold text-gray-900">
-                    R{parseFloat(p.amount).toLocaleString("en-ZA")}
+                  <span className="text-sm font-semibold tabular-nums text-stone-900">
+                    R{parseFloat(payout.amount).toLocaleString("en-ZA")}
                   </span>
-                  <Badge label={p.status} />
-                  {canManage && p.status === "SCHEDULED" && (
-                    <>
+                  <Badge label={payout.status} />
+                  {canManage && payout.status === "SCHEDULED" && (
+                    <div className="flex items-center gap-2">
                       <button
                         onClick={() =>
-                          settle({ payoutId: p.id, action: "complete" })
+                          settle({ payoutId: payout.id, action: "complete" })
                         }
-                        className="text-xs font-medium text-green-700 hover:underline"
+                        className="rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-100"
                       >
-                        Complete
+                        Mark paid
                       </button>
                       <button
                         onClick={() =>
-                          settle({ payoutId: p.id, action: "failed" })
+                          settle({ payoutId: payout.id, action: "failed" })
                         }
-                        className="text-xs font-medium text-red-600 hover:underline"
+                        className="rounded-lg px-2.5 py-1 text-xs font-medium text-stone-600 transition hover:bg-red-50 hover:text-red-700"
                       >
                         Failed
                       </button>
-                    </>
+                    </div>
                   )}
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
