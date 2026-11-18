@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import useAuthStore from "../../stores/authStore";
+import { Wordmark } from "../ui/BrandMark";
 import {
   LayoutDashboard,
   Users,
@@ -12,7 +13,7 @@ import {
 
 const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/groups", icon: Users, label: "My Stokvels" },
+  { to: "/groups", icon: Users, label: "My stokvels" },
   { to: "/notifications", icon: Bell, label: "Notifications" },
   { to: "/profile", icon: User, label: "Profile" },
 ];
@@ -23,7 +24,7 @@ export default function Sidebar({ open, onClose }) {
 
   const handleLogout = async () => {
     await logout();
-    toast.success("Logged out");
+    toast.success("You have signed out");
     navigate("/login");
   };
 
@@ -32,56 +33,49 @@ export default function Sidebar({ open, onClose }) {
       {/* Mobile overlay */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+          className="fixed inset-0 z-20 bg-stone-950/50 backdrop-blur-sm lg:hidden"
           onClick={onClose}
+          aria-hidden="true"
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`
-        fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-100
-        z-30 flex flex-col transition-transform duration-300
+        fixed left-0 top-0 z-30 flex h-full w-64 flex-col border-r
+        border-stone-200/80 bg-white transition-transform duration-300
         lg:static lg:translate-x-0
         ${open ? "translate-x-0" : "-translate-x-full"}
       `}
       >
-        {/* Logo */}
-        <div className="p-6 border-b border-gray-100">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-primary-600 rounded-xl flex items-center justify-center">
-                <span className="text-lg">🏦</span>
-              </div>
-              <div>
-                <p className="font-bold text-gray-900 text-sm">StokvelSA</p>
-                <p className="text-xs text-gray-400">Digital Stokvel</p>
-              </div>
-            </div>
-            <button
-              onClick={onClose}
-              className="lg:hidden text-gray-400 hover:text-gray-600"
-            >
-              <X size={20} />
-            </button>
+        {/* Mark. The app used to open with a bank emoji, which said "branch"
+            where the whole point is that this is people, not a bank. */}
+        <div className="flex items-start justify-between gap-2 border-b border-stone-200/80 p-5">
+          <div>
+            <Wordmark to="/dashboard" />
+            <p className="mt-1 pl-[46px] text-[11px] font-medium uppercase tracking-wider text-stone-400">
+              Digital stokvel
+            </p>
           </div>
+          <button
+            onClick={onClose}
+            className="-mr-1 rounded-lg p-1.5 text-stone-400 transition hover:bg-stone-100 hover:text-stone-600 lg:hidden"
+            aria-label="Close navigation"
+          >
+            <X size={20} />
+          </button>
         </div>
 
-        {/* User info */}
         {profile && (
-          <div className="px-4 py-3 border-b border-gray-100">
+          <div className="border-b border-stone-200/80 px-4 py-4">
             <div className="flex items-center gap-3">
-              <div
-                className="w-9 h-9 rounded-full bg-primary-100 flex items-center
-                              justify-center text-primary-700 font-semibold text-sm"
-              >
-                {profile.fullName?.charAt(0).toUpperCase()}
+              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary-100 text-sm font-semibold text-primary-800 ring-2 ring-white">
+                {profile.fullName?.charAt(0).toUpperCase() || "?"}
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {profile.fullName}
+                <p className="truncate text-sm font-medium text-stone-900">
+                  {profile.fullName || "Your account"}
                 </p>
-                <p className="text-xs text-gray-400 truncate">
+                <p className="truncate text-xs text-stone-500">
                   {profile.email}
                 </p>
               </div>
@@ -89,38 +83,45 @@ export default function Sidebar({ open, onClose }) {
           </div>
         )}
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 space-y-1 p-3" aria-label="Main navigation">
           {navItems.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
               onClick={onClose}
               className={({ isActive }) => `
-                flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm
-                font-medium transition-colors
+                group relative flex items-center gap-3 rounded-lg px-3 py-2.5
+                text-sm font-medium transition-colors
                 ${
                   isActive
-                    ? "bg-primary-50 text-primary-700"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    ? "bg-primary-50 text-primary-800"
+                    : "text-stone-600 hover:bg-stone-100/80 hover:text-stone-900"
                 }
               `}
             >
-              <Icon size={18} />
-              {label}
+              {({ isActive }) => (
+                <>
+                  {/* The tab on the left edge is what your eye uses to find
+                      "where am I" without reading anything. */}
+                  <span
+                    className={`absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-primary-600 transition-opacity ${
+                      isActive ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                  <Icon size={18} strokeWidth={isActive ? 2.2 : 1.9} />
+                  {label}
+                </>
+              )}
             </NavLink>
           ))}
         </nav>
 
-        {/* Logout */}
-        <div className="p-4 border-t border-gray-100">
+        <div className="border-t border-stone-200/80 p-3">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm
-                       font-medium text-gray-600 hover:bg-red-50 hover:text-red-600
-                       transition-colors w-full"
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-stone-600 transition-colors hover:bg-red-50 hover:text-red-700"
           >
-            <LogOut size={18} />
+            <LogOut size={18} strokeWidth={1.9} />
             Sign out
           </button>
         </div>

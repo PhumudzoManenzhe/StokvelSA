@@ -118,9 +118,9 @@ export default function DashboardPage() {
         ) : groups.length === 0 ? (
           <div className="card">
             <EmptyState
-              icon="🏦"
+              icon={Users}
               title="No stokvels yet"
-              description="Create your first stokvel group or ask someone to invite you"
+              description="Create your first stokvel group, or ask a friend to invite you to one they already run."
               action={
                 <Link to="/groups/new" className="btn-primary">
                   Create a Stokvel

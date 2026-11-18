@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, SearchX, Users } from "lucide-react";
 import { useState } from "react";
 import api from "../../lib/api";
 import Spinner from "../../components/ui/Spinner";
@@ -29,14 +29,16 @@ export default function GroupsPage() {
                       justify-between"
       >
         <div>
-          <h2 className="text-xl font-bold text-gray-900">My Stokvels</h2>
-          <p className="text-sm text-gray-500">
-            Manage all your stokvel groups in one place
+          <h2 className="font-display text-xl font-semibold text-stone-900">
+            My stokvels
+          </h2>
+          <p className="text-sm text-stone-600">
+            Every circle you belong to, in one place
           </p>
         </div>
         <Link to="/groups/new" className="btn-primary flex items-center gap-2">
           <Plus size={16} />
-          New Stokvel
+          New stokvel
         </Link>
       </div>
 
@@ -45,7 +47,7 @@ export default function GroupsPage() {
         <Search
           size={16}
           className="absolute left-3 top-1/2 -translate-y-1/2
-                                     text-gray-400"
+                                     text-stone-400"
         />
         <input
           type="text"
@@ -64,12 +66,12 @@ export default function GroupsPage() {
       ) : groups.length === 0 ? (
         <div className="card">
           <EmptyState
-            icon="🏦"
+            icon={search ? SearchX : Users}
             title={search ? "No stokvels found" : "No stokvels yet"}
             description={
               search
-                ? `No stokvels match "${search}"`
-                : "Create your first stokvel or accept an invitation"
+                ? `Nothing matches "${search}". Try a shorter name.`
+                : "Create your first stokvel, or accept an invitation from someone who already has one."
             }
             action={
               !search && (

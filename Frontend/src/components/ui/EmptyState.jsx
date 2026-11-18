@@ -1,19 +1,34 @@
-export default function EmptyState({
-  icon = "📭",
-  title,
-  description,
-  action,
-}) {
+/**
+ * The empty state is the first thing a new member sees, so it should look
+ * deliberate rather than like a page that failed to load.
+ *
+ * `icon` accepts a Lucide component or a short emoji string; a component is
+ * preferred, because emoji render differently on every device.
+ */
+export default function EmptyState({ icon: Icon, title, description, action }) {
+  const isEmoji = typeof Icon === "string";
+
   return (
-    <div className="text-center py-12">
-      <div className="text-5xl mb-4">{icon}</div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-      {description && (
-        <p className="text-gray-500 text-sm mb-6 max-w-sm mx-auto">
-          {description}
-        </p>
+    <div className="mx-auto max-w-sm px-4 py-12 text-center">
+      {Icon && (
+        <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-primary-50 text-primary-700 ring-1 ring-primary-100">
+          {isEmoji ? (
+            <span className="text-2xl">{Icon}</span>
+          ) : (
+            <Icon size={24} strokeWidth={1.75} aria-hidden="true" />
+          )}
+        </div>
       )}
-      {action}
+
+      <h3 className="mt-5 font-display text-xl font-semibold text-stone-900">
+        {title}
+      </h3>
+
+      {description && (
+        <p className="mt-2 text-sm leading-6 text-stone-600">{description}</p>
+      )}
+
+      {action && <div className="mt-6">{action}</div>}
     </div>
   );
 }
