@@ -113,28 +113,25 @@ function GroupRow({ group }) {
                  cursor-pointer block"
     >
       <div className="flex items-start gap-4">
-        <div
-          className="w-12 h-12 rounded-2xl bg-primary-100 flex items-center
-                        justify-center text-2xl shrink-0"
-        >
-          🏦
+        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary-50 font-display text-xl font-semibold text-primary-700 ring-1 ring-primary-100">
+          {group.name?.charAt(0).toUpperCase() || "S"}
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h4 className="font-semibold text-gray-900 truncate">
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex items-center gap-2">
+            <h4 className="truncate font-semibold text-stone-900">
               {group.name}
             </h4>
             <span className={`${roleColors[group.myRole]} shrink-0`}>
               {group.myRole}
             </span>
           </div>
-          <p className="text-sm text-gray-500 truncate">
+          <p className="truncate text-sm text-stone-500">
             {group.description || "No description"}
           </p>
-          <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+          <div className="mt-2 flex items-center gap-3 text-xs text-stone-500">
             <span>{group._count?.members || 0} members</span>
-            <span>•</span>
-            <span className="text-primary-600 font-medium">
+            <span aria-hidden="true">·</span>
+            <span className="font-medium text-primary-700">
               R{parseFloat(group.contributionAmount).toLocaleString("en-ZA")}{" "}
               {freqLabel[group.contributionFrequency]}
             </span>
