@@ -11,7 +11,7 @@ import {
 import api from "../../lib/api";
 import Spinner from "../../components/ui/Spinner";
 import Badge from "../../components/ui/Badge";
-import InviteMemberModal from "../../components/groups/InviteMemberModal";
+import InviteMemberModal from "./InviteMemberModal";
 import { useState } from "react";
 
 export default function GroupDetailPage() {
