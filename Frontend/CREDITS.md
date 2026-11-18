@@ -1,26 +1,26 @@
 # Photography credits
 
-All photographs in `public/images/` are real photographs, not renders — with one
-deliberate exception, listed below.
+Every image in `public/images/` is a photograph, not a render.
 
-Source: [Unsplash](https://unsplash.com), whose submission guidelines exclude
-content created by AI. Licensed under the [Unsplash License](https://unsplash.com/license),
-which permits commercial use without attribution. Credit is given anyway.
+Two of them come from [Unsplash](https://unsplash.com), whose submission
+guidelines exclude content created by AI. They are used under the
+[Unsplash License](https://unsplash.com/license), which permits commercial use
+without attribution. Credit is given anyway.
 
 | File | Photograph | Photographer | Location | Source |
 | --- | --- | --- | --- | --- |
 | `ubuntu-hands.jpg` | A group of hands reaching out towards each other | Sincerely Media | Gqeberha, South Africa | <https://unsplash.com/photos/kSeo6slWMQE> |
 | `auth-register.jpg` | Two women laughing, one holding pink balloons | Nqobile Vundla | Johannesburg, South Africa | <https://unsplash.com/photos/LkgZUlxK7ZY> |
-| `auth-login.jpg` | A woman standing in a stone archway courtyard | Nqobile Vundla | South Africa | <https://unsplash.com/photos/m5mGOctnbCI> |
+| `auth-login.jpg` | A woman reading her phone on a suburban street in late afternoon light | Not recorded | — | Carried over from the first build and never documented. Confirm its licence before relying on it commercially. |
 
-## The one image that is not a photograph
+## Where this leaves the landing page
 
-| File | What it is | Status |
-| --- | --- | --- |
-| `stokvel-circle.jpg` | Landing page hero — a group sitting in a circle | **Generated, not captured.** Kept because the layout was liked, but it is the weakest image on the site: the hands holding the book and envelope merge into the paper, and every face is lit identically. Replace it first if you replace anything. |
+The hero does not use a photograph. The site used to open with a generated
+group portrait, and there is no free stock of a South African stokvel to
+replace it with, so the hero now shows an example ledger instead — the product,
+rather than an imitation of the people using it.
 
-If you have a photograph of your own stokvel, it belongs in that slot. Nothing
-else on this site will look as much like the people it is for.
+If you have a photograph of your own stokvel, that is what belongs in it.
 
 ## A note for anyone replacing these
 

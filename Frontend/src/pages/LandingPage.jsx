@@ -292,29 +292,76 @@ export default function LandingPage() {
           </div>
 
           <div className="relative animate-fade-in">
-            <img
-              src="/images/stokvel-circle.jpg"
-              alt="A multigenerational South African stokvel sitting in a circle at home, passing a notebook and an envelope between them"
-              width={1600}
-              height={1067}
-              fetchPriority="high"
-              decoding="async"
-              className="h-[360px] w-full rounded-[1.75rem] object-cover shadow-soft sm:h-[440px] lg:h-[500px]"
-            />
-
-            <div className="absolute -bottom-6 left-4 right-4 rounded-2xl border border-stone-200/80 bg-white/95 p-4 shadow-soft backdrop-blur sm:left-6 sm:right-auto sm:max-w-xs">
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-emerald-50 text-emerald-700">
-                  <Check size={16} />
-                </span>
+            {/* This slot used to hold a photograph of a stokvel sitting in a
+                circle. No such photograph exists in free stock, and the one that
+                stood here was generated — which is why every hand in it was
+                wrong. A picture of the product is a more honest opening than an
+                imitation of the people using it. */}
+            <div className="rounded-[1.75rem] border border-stone-200/80 bg-white p-6 shadow-soft sm:p-7">
+              <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-stone-900">
-                    Confirmed by the treasurer
+                  <p className="font-display text-lg font-semibold text-stone-900">
+                    Mama&rsquo;s stokvel
                   </p>
-                  <p className="mt-0.5 text-xs leading-5 text-stone-500">
-                    Every member sees the same entry, at the same time.
+                  <p className="mt-0.5 text-xs text-stone-500">
+                    October round &middot; 6 members
                   </p>
                 </div>
+                <span className="rounded-full border border-stone-200 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide text-stone-500">
+                  Example
+                </span>
+              </div>
+
+              <ul className="mt-5 space-y-px overflow-hidden rounded-xl bg-stone-100">
+                {[
+                  { name: "Thandi M.", amount: "R500", paid: true },
+                  { name: "Sipho N.", amount: "R500", paid: true },
+                  { name: "Nomsa D.", amount: "R500", paid: false },
+                ].map((row) => (
+                  <li
+                    key={row.name}
+                    className="flex items-center justify-between gap-3 bg-white px-4 py-3"
+                  >
+                    <span className="flex items-center gap-3">
+                      <span
+                        className={`grid h-7 w-7 place-items-center rounded-full text-[11px] font-semibold ${
+                          row.paid
+                            ? "bg-emerald-50 text-emerald-700"
+                            : "bg-amber-50 text-amber-700"
+                        }`}
+                      >
+                        {row.name.charAt(0)}
+                      </span>
+                      <span className="text-sm font-medium text-stone-800">
+                        {row.name}
+                      </span>
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <span className="text-sm tabular-nums text-stone-600">
+                        {row.amount}
+                      </span>
+                      {row.paid ? (
+                        <Check size={15} className="text-emerald-600" />
+                      ) : (
+                        <span className="text-xs font-medium text-amber-700">
+                          due
+                        </span>
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-5 flex items-start gap-3 rounded-xl bg-primary-50/70 p-3">
+                <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white text-primary-700">
+                  <Check size={15} />
+                </span>
+                <p className="text-xs leading-5 text-stone-600">
+                  <span className="font-semibold text-stone-900">
+                    R1 500 banked.
+                  </span>{" "}
+                  Every member sees the same entry, at the same time.
+                </p>
               </div>
             </div>
           </div>
