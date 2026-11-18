@@ -18,6 +18,27 @@ StokvelSA brings group administration and savings activity into one place. Membe
 - **Use South African context** — retrieve and cache local interest-rate information for savings-related features.
 - **Support online payment workflows** — initiate PayFast Sandbox payments and process payment notifications (ITNs).
 
+## Screens
+
+| Route | Purpose |
+|---|---|
+| `/` | Landing page |
+| `/login`, `/register` | Sign in and create an account |
+| `/forgot-password`, `/reset-password` | Request and complete a password reset |
+| `/dashboard` | Contribution and payout summary across groups |
+| `/groups` | The groups the signed-in user belongs to |
+| `/groups/new` | Create a stokvel |
+| `/groups/:id` | Members, roles, invitations and group summary |
+| `/groups/:id/contributions` | Contribution periods, with generation and confirmation for administrators and treasurers |
+| `/groups/:id/payouts` | Payout schedule, scheduling and settlement |
+| `/groups/:id/meetings` | Meeting schedule, creation and cancellation |
+| `/groups/:id/analytics` | Compliance and payout reporting |
+| `/join` | Accepts the invitation link sent by email |
+| `/notifications` | Group and personal notifications |
+| `/profile` | Personal details and password |
+
+Anything behind sign-in is loaded on demand, so the first visit costs a fraction of the full application.
+
 ## Application preview
 
 Screenshots and a public demo link can be added here once a shareable deployment and representative demo account are available.
@@ -34,9 +55,10 @@ Screenshots and a public demo link can be added here once a shareable deployment
 | Authentication | Supabase Auth |
 | Payments | PayFast Sandbox |
 | Background jobs | node-cron |
-| Reporting and exports | PDFKit, ExcelJS, csv-writer |
-| Email and logging | EmailJS, Resend, Winston |
-| Testing and code quality | Jest, Supertest, ESLint, Prettier |
+| Reporting | PDFKit |
+| Email and logging | EmailJS, Winston |
+| Testing and code quality | Jest, ESLint, Prettier |
+| Continuous integration | GitHub Actions |
 
 ## Architecture
 
@@ -120,11 +142,11 @@ cp .env.example .env
 Copy-Item .env.example .env
 ```
 
-Set the values in `Backend/.env` for your environment. At minimum, configure:
+Set the values in `Backend/.env` for your environment. The API refuses to start without the first four, so configure them before anything else:
 
 - `DATABASE_URL` and `DIRECT_URL` for PostgreSQL.
-- `SUPABASE_URL` and `SUPABASE_ANON_KEY` for Supabase authentication.
-- The application secrets and email settings required by the features you intend to test.
+- `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_KEY`. The service key is used to verify tokens and to create accounts during seeding, and must never reach the browser.
+- Email settings, if you want invitations and reminders to be delivered rather than logged as skipped.
 - PayFast Sandbox credentials, keeping `PAYFAST_SANDBOX=true` while developing.
 
 Generate the Prisma client and apply the database migrations:
@@ -133,6 +155,14 @@ Generate the Prisma client and apply the database migrations:
 npx prisma generate
 npm run db:migrate
 ```
+
+Load the demo data:
+
+```bash
+npm run db:seed
+```
+
+The seed creates three people — an administrator, a treasurer and a member — inside Supabase Auth as well as in the database, so they can actually sign in. All three use the password in `SEED_PASSWORD`, which defaults to `Stokvel2026!`. Without Supabase credentials the seed still writes the profiles but says plainly that they cannot be used to log in.
 
 Start the API in development mode:
 
@@ -179,6 +209,7 @@ Run commands from the relevant directory.
 | `npm run lint` | Lint backend source files |
 | `npm run db:migrate` | Create and apply a development migration |
 | `npm run db:push` | Push the Prisma schema to the database |
+| `npm run db:seed` | Load the demo group, members and activity |
 | `npm run db:studio` | Open Prisma Studio |
 
 **Frontend** (`cd Frontend`)
@@ -190,9 +221,13 @@ Run commands from the relevant directory.
 | `npm run preview` | Preview the production build locally |
 | `npm run lint` | Run ESLint |
 
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on every push and pull request. It lints and tests the API with Jest, then lints and builds the client. The build step matters because it runs on Linux: an import whose capitalisation only happens to match on a case-insensitive filesystem will fail there.
+
 ## Security notes
 
-- Do not commit `.env` files, database URLs, Supabase service-role keys, JWT secrets or payment credentials.
+- Do not commit `.env` files, database URLs, Supabase service-role keys or payment credentials.
 - Use the Supabase public/anon key in the browser; keep service-role and other privileged secrets on the server.
 - Keep PayFast in Sandbox mode while developing and testing.
 - Configure the backend's `FRONTEND_URL` to the actual frontend origin before deployment.
