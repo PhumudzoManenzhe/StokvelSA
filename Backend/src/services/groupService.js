@@ -146,7 +146,14 @@ const getGroup = async (groupId, userId) => {
     throw new NotFoundError('Group not found');
   }
 
-  return group;
+  // The caller's own role in this group. The members are already loaded and the
+  // controller passes the user id, but the role was never surfaced, so a client
+  // had no way to know what this particular user may do in the group.
+  const membership = group.members.find(
+    (member) => member.user.id === userId
+  );
+
+  return { ...group, myRole: membership ? membership.role : null };
 };
 
 const getGroupMembers = async (groupId, query) => {
