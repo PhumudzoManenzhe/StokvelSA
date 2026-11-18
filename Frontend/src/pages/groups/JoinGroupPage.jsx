@@ -33,10 +33,10 @@ export default function JoinGroupPage() {
   if (!code) {
     return (
       <div className="mx-auto max-w-lg space-y-4 py-10 text-center">
-        <h2 className="text-xl font-bold text-gray-900">
+        <h2 className="font-display text-xl font-semibold text-stone-900">
           This invitation link is incomplete
         </h2>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm leading-6 text-stone-600">
           The link is missing its invitation code. Ask whoever invited you to
           resend it.
         </p>
@@ -50,25 +50,25 @@ export default function JoinGroupPage() {
   return (
     <div className="mx-auto max-w-lg py-10">
       <div className="card space-y-5 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-50 text-primary-600">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-50 text-primary-700">
           <Mail size={22} />
         </div>
 
         <div>
-          <h2 className="text-xl font-bold text-gray-900">
+          <h2 className="font-display text-xl font-semibold text-stone-900">
             You have been invited to a stokvel
           </h2>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm leading-6 text-stone-600">
             Accepting adds you as a member of the group, with the role the
             administrator chose for you.
           </p>
         </div>
 
-        <div className="rounded-lg bg-gray-50 px-4 py-3">
-          <p className="text-xs uppercase tracking-wide text-gray-400">
+        <div className="rounded-xl bg-stone-50 px-4 py-3 ring-1 ring-stone-200/70">
+          <p className="text-xs uppercase tracking-wide text-stone-500">
             Invitation code
           </p>
-          <p className="mt-1 font-mono text-lg font-semibold tracking-widest text-gray-900">
+          <p className="mt-1 font-mono text-lg font-semibold tracking-widest text-stone-900">
             {code}
           </p>
         </div>
@@ -76,7 +76,7 @@ export default function JoinGroupPage() {
         {/* The API only accepts an invitation for the address it was sent to,
             so name the signed-in account when it does not match. */}
         {profile?.email && (
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-stone-500">
             Signed in as {profile.email}
           </p>
         )}
