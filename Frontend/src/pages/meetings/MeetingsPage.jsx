@@ -5,12 +5,14 @@ import toast from "react-hot-toast";
 import api from "../../lib/api";
 import Spinner from "../../components/ui/Spinner";
 import Badge from "../../components/ui/Badge";
+import EmptyState from "../../components/ui/EmptyState";
 import { format } from "date-fns";
-import { MapPin, Users } from "lucide-react";
+import { CalendarDays, MapPin, Users } from "lucide-react";
 
 export default function MeetingsPage() {
   const { id } = useParams();
   const queryClient = useQueryClient();
+  const [confirmingCancel, setConfirmingCancel] = useState(null);
   const [form, setForm] = useState({
     title: "",
     date: "",
@@ -68,9 +70,90 @@ export default function MeetingsPage() {
 
   const meetings = data?.meetings || [];
 
+  // The question a member actually has is "when do we meet next?", so upcoming
+  // meetings lead and past ones follow, instead of the list arriving in
+  // whatever order the database returned.
+  const byDate = (a, b) => new Date(a.date) - new Date(b.date);
+  const upcoming = meetings
+    .filter((meeting) => meeting.status === "SCHEDULED")
+    .sort(byDate);
+  const settled = meetings
+    .filter((meeting) => meeting.status !== "SCHEDULED")
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const renderMeeting = (meeting) => (
+    <div key={meeting.id} className="card">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h4 className="font-semibold text-stone-900">{meeting.title}</h4>
+          <p className="mt-1 text-sm text-stone-600">
+            {format(new Date(meeting.date), "EEEE, dd MMMM yyyy · HH:mm")}
+          </p>
+          {meeting.location && (
+            <p className="mt-1 flex items-center gap-1 text-xs text-stone-500">
+              <MapPin size={12} />
+              {meeting.location}
+            </p>
+          )}
+        </div>
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          <Badge label={meeting.status} />
+          {isAdmin && meeting.status === "SCHEDULED" && (
+            <>
+              {confirmingCancel === meeting.id ? (
+                <span className="flex items-center gap-2 text-xs">
+                  <span className="text-stone-600">Cancel it?</span>
+                  <button
+                    onClick={() => cancel(meeting.id)}
+                    className="rounded-lg bg-red-50 px-2 py-1 font-semibold text-red-700 hover:bg-red-100"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    onClick={() => setConfirmingCancel(null)}
+                    className="rounded-lg px-2 py-1 font-medium text-stone-600 hover:bg-stone-100"
+                  >
+                    No
+                  </button>
+                </span>
+              ) : (
+                <button
+                  onClick={() => setConfirmingCancel(meeting.id)}
+                  className="text-xs font-medium text-red-600 hover:underline"
+                >
+                  Cancel
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {meeting.agenda && (
+        <div className="mt-3 rounded-lg bg-stone-50 p-3">
+          <p className="mb-1 text-xs font-medium text-stone-500">Agenda</p>
+          <p className="text-sm text-stone-700">{meeting.agenda}</p>
+        </div>
+      )}
+
+      <div className="mt-3 flex items-center gap-1 text-xs text-stone-500">
+        <Users size={12} />
+        {meeting._count?.attendees || 0} invited
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold text-gray-900">Meetings</h2>
+      <div>
+        <h2 className="font-display text-xl font-semibold text-stone-900">
+          Meetings
+        </h2>
+        <p className="text-sm text-stone-600">
+          The stokvel doing its business: when you meet, where, and what is on
+          the table.
+        </p>
+      </div>
 
       {canManage && (
         <form
@@ -134,65 +217,45 @@ export default function MeetingsPage() {
           </div>
           <div className="flex justify-end">
             <button disabled={scheduling} className="btn-primary">
-              {scheduling ? "Scheduling..." : "Schedule meeting"}
+              {scheduling ? "Scheduling…" : "Schedule meeting"}
             </button>
           </div>
         </form>
       )}
 
-      <div className="space-y-4">
-        {meetings.length === 0 ? (
-          <div className="card">
-            <p className="text-center text-gray-400 py-8">
-              No meetings scheduled yet
-            </p>
-          </div>
-        ) : (
-          meetings.map((m) => (
-            <div key={m.id} className="card">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h4 className="font-semibold text-gray-900">{m.title}</h4>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {format(new Date(m.date), "EEEE, dd MMMM yyyy · HH:mm")}
-                  </p>
-                  {m.location && (
-                    <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                      <MapPin size={12} />
-                      {m.location}
-                    </p>
-                  )}
-                </div>
-                <div className="flex flex-col items-end gap-2">
-                  <Badge label={m.status} />
-                  {isAdmin && m.status === "SCHEDULED" && (
-                    <button
-                      onClick={() => cancel(m.id)}
-                      className="text-xs font-medium text-red-600 hover:underline"
-                    >
-                      Cancel
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {m.agenda && (
-                <div className="mt-3 p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs font-medium text-gray-500 mb-1">
-                    Agenda
-                  </p>
-                  <p className="text-sm text-gray-700">{m.agenda}</p>
-                </div>
-              )}
-
-              <div className="flex items-center gap-1 mt-3 text-xs text-gray-400">
-                <Users size={12} />
-                {m._count?.attendees || 0} invited
-              </div>
+      {meetings.length === 0 ? (
+        <div className="card">
+          <EmptyState
+            icon={CalendarDays}
+            title="No meetings scheduled"
+            description={
+              canManage
+                ? "Set the next date above. Members will see it here, with the agenda."
+                : "Once your chairperson schedules the next meeting, the date and agenda will appear here."
+            }
+          />
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {upcoming.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+                Coming up
+              </h3>
+              {upcoming.map(renderMeeting)}
             </div>
-          ))
-        )}
-      </div>
+          )}
+
+          {settled.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+                Past
+              </h3>
+              {settled.map(renderMeeting)}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
