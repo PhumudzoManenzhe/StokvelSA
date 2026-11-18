@@ -23,6 +23,13 @@ export default {
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
+        // Used for the large statements on the marketing and auth screens. A warm
+        // serif gives those headings a voice that Inter alone cannot.
+        display: ["Fraunces", "Georgia", "serif"],
+      },
+      boxShadow: {
+        // A warm shadow rather than a grey one, so cards sit in the palette.
+        soft: "0 1px 2px rgba(28, 25, 23, 0.04), 0 12px 32px -12px rgba(28, 25, 23, 0.18)",
       },
     },
   },

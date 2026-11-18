@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,8 +8,36 @@
     box-sizing: border-box;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Respect a visitor who has asked the system to stop animating things. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    .animate-fade-in,
+    .animate-fade-in-up {
+      animation: none;
+    }
+  }
+
   body {
     @apply bg-stone-50 text-stone-900 font-sans;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    @apply bg-amber-200/70 text-stone-900;
+  }
+
+  /* One visible focus treatment everywhere, rather than relying on the browser
+     default, which disappears against the warm backgrounds. */
+  :where(a, button, input, select, textarea, summary):focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2 ring-offset-stone-50;
   }
 }
 
@@ -18,7 +46,14 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .animate-fade-in { animation: fade-in 0.45s ease-out both; }
+
+.animate-fade-in-up { animation: fade-in-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
 @layer components {
   .btn {
@@ -77,5 +112,13 @@
   }
   .badge-gray {
     @apply badge bg-gray-100   text-gray-800;
+  }
+  /* Roles rendered an empty badge until these existed: the group cards ask for
+     badge-purple for administrators. */
+  .badge-purple {
+    @apply badge bg-violet-100 text-violet-800;
+  }
+  .badge-amber {
+    @apply badge bg-amber-100  text-amber-800;
   }
 }
