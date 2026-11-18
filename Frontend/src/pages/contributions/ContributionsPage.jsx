@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { Wallet } from "lucide-react";
 import api from "../../lib/api";
 import Spinner from "../../components/ui/Spinner";
 import Badge from "../../components/ui/Badge";
+import EmptyState from "../../components/ui/EmptyState";
 import { format } from "date-fns";
 
 export default function ContributionsPage() {
@@ -86,7 +88,16 @@ export default function ContributionsPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold text-gray-900">Contributions</h2>
+      <div>
+        <h2 className="font-display text-xl font-semibold text-stone-900">
+          Contributions
+        </h2>
+        <p className="text-sm text-stone-600">
+          {canManage
+            ? "Open a period to raise this month's contribution for every active member, then confirm each payment as it comes in."
+            : "What you owe, and what you have already paid."}
+        </p>
+      </div>
 
       {/* Opening a period creates this month's contribution for every active
           member, which is the treasurer's starting point. */}
@@ -132,85 +143,98 @@ export default function ContributionsPage() {
 
       {/* Summary cards */}
       {summary && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <div className="card text-center">
-            <p className="text-2xl font-bold text-green-600">
+            <p className="font-display text-2xl font-semibold text-emerald-700">
               {summary.confirmed}
             </p>
-            <p className="text-xs text-gray-500 mt-1">Confirmed</p>
+            <p className="mt-1 text-xs text-stone-500">Confirmed</p>
           </div>
           <div className="card text-center">
-            <p className="text-2xl font-bold text-yellow-600">
+            <p className="font-display text-2xl font-semibold text-amber-700">
               {summary.pending}
             </p>
-            <p className="text-xs text-gray-500 mt-1">Pending</p>
+            <p className="mt-1 text-xs text-stone-500">Pending</p>
           </div>
           <div className="card text-center">
-            <p className="text-2xl font-bold text-red-600">{summary.missed}</p>
-            <p className="text-xs text-gray-500 mt-1">Missed</p>
+            <p className="font-display text-2xl font-semibold text-red-700">
+              {summary.missed}
+            </p>
+            <p className="mt-1 text-xs text-stone-500">Missed</p>
           </div>
           <div className="card text-center">
-            <p className="text-2xl font-bold text-primary-600">
+            <p className="font-display text-2xl font-semibold text-primary-700">
               {summary.complianceRate}%
             </p>
-            <p className="text-xs text-gray-500 mt-1">Compliance</p>
+            <p className="mt-1 text-xs text-stone-500">Compliance</p>
           </div>
         </div>
       )}
 
       {/* Contributions list */}
       <div className="card">
-        <div className="space-y-3">
-          {contributions.length === 0 ? (
-            <p className="text-center text-gray-400 py-8">
-              No contributions yet for this period
-            </p>
-          ) : (
-            contributions.map((c) => (
+        {contributions.length === 0 ? (
+          <EmptyState
+            icon={Wallet}
+            title="No contributions for this period"
+            description={
+              canManage
+                ? "Choose a month and a due date above to open the period for everyone."
+                : "Once your treasurer opens the period, this month's contribution will appear here."
+            }
+          />
+        ) : (
+          <div className="space-y-1">
+            {contributions.map((contribution) => (
               <div
-                key={c.id}
-                className="flex items-center justify-between
-                                         py-3 border-b border-gray-50 last:border-0"
+                key={contribution.id}
+                className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 py-3 last:border-0"
               >
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {c.member?.fullName}
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-stone-900">
+                    {contribution.member?.fullName}
                   </p>
-                  <p className="text-xs text-gray-400">
-                    {c.period} · Due{" "}
-                    {format(new Date(c.dueDate), "dd MMM yyyy")}
+                  <p className="text-xs text-stone-500">
+                    {contribution.period} · due{" "}
+                    {format(new Date(contribution.dueDate), "dd MMM yyyy")}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold text-gray-900">
-                    R{parseFloat(c.amount).toLocaleString("en-ZA")}
+                  <span className="text-sm font-semibold tabular-nums text-stone-900">
+                    R{parseFloat(contribution.amount).toLocaleString("en-ZA")}
                   </span>
-                  <Badge label={c.status} />
-                  {canManage && c.status === "PENDING" && (
-                    <>
+                  <Badge label={contribution.status} />
+                  {canManage && contribution.status === "PENDING" && (
+                    <div className="flex items-center gap-2">
                       <button
                         onClick={() =>
-                          mark({ contributionId: c.id, action: "confirm" })
+                          mark({
+                            contributionId: contribution.id,
+                            action: "confirm",
+                          })
                         }
-                        className="text-xs font-medium text-green-700 hover:underline"
+                        className="rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-100"
                       >
-                        Confirm
+                        Confirm paid
                       </button>
                       <button
                         onClick={() =>
-                          mark({ contributionId: c.id, action: "missed" })
+                          mark({
+                            contributionId: contribution.id,
+                            action: "missed",
+                          })
                         }
-                        className="text-xs font-medium text-red-600 hover:underline"
+                        className="rounded-lg px-2.5 py-1 text-xs font-medium text-stone-600 transition hover:bg-red-50 hover:text-red-700"
                       >
                         Missed
                       </button>
-                    </>
+                    </div>
                   )}
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
