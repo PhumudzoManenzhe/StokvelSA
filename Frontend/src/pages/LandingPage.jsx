@@ -397,10 +397,10 @@ export default function LandingPage() {
         <section className="bg-stone-900 py-0 text-stone-50">
           <div className="mx-auto grid max-w-6xl items-center gap-0 md:grid-cols-2">
             <img
-              src="/images/ubuntu-stoep.jpg"
-              alt="A grandmother in a patterned doek laughing with a younger woman on a sunlit stoep"
-              width={900}
-              height={1125}
+              src="/images/ubuntu-hands.jpg"
+              alt="Four pairs of hands reaching towards each other, palms open, against white linen"
+              width={1100}
+              height={1375}
               loading="lazy"
               decoding="async"
               className="h-72 w-full object-cover md:h-full md:min-h-[420px]"

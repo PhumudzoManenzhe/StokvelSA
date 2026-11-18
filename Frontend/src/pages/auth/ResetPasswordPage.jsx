@@ -69,7 +69,7 @@ export default function ResetPasswordPage() {
   return (
     <AuthLayout
       image="/images/auth-login.jpg"
-      imageAlt="A woman reading something on her phone in the late afternoon sun"
+      imageAlt="A young South African woman standing confidently in a stone archway courtyard"
       greeting="Sawubona"
       title="Set a new password."
     >

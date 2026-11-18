@@ -28,7 +28,7 @@ export default function ForgotPasswordPage() {
   return (
     <AuthLayout
       image="/images/auth-register.jpg"
-      imageAlt="A group of South African friends laughing together around a laptop at home"
+      imageAlt="Two South African women laughing together, one holding a bunch of pink balloons"
       greeting="Sawubona"
       title="We will get you back in."
     >
