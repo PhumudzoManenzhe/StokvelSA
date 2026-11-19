@@ -67,6 +67,10 @@ export default function AnalyticsPage() {
     { name: "Missed", value: dashboard.currentPeriodStats.missed },
   ].filter((d) => d.value > 0);
 
+  // The donut's centre figure: how many contributions the current period holds
+  // in total, whatever their status.
+  const pieTotal = pieData.reduce((sum, slice) => sum + slice.value, 0);
+
   // Bar chart data from compliance
   const barData =
     compliance?.memberCompliance?.map((mc) => ({
@@ -164,6 +168,9 @@ export default function AnalyticsPage() {
             </h3>
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
+                {/* Counts live in the donut hole and the legend rather than on
+                    leader lines: outside labels are clipped by the card once the
+                    longest name reaches the edge of the 200px chart. */}
                 <Pie
                   data={pieData}
                   cx="50%"
@@ -171,13 +178,37 @@ export default function AnalyticsPage() {
                   innerRadius={50}
                   outerRadius={80}
                   dataKey="value"
-                  label={({ name, value }) => `${name}: ${value}`}
+                  labelLine={false}
+                  stroke="none"
                 >
                   {pieData.map((_, index) => (
                     <Cell key={index} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Legend />
+                <text
+                  x="50%"
+                  y="46%"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="fill-gray-900 text-2xl font-semibold"
+                >
+                  {pieTotal}
+                </text>
+                <text
+                  x="50%"
+                  y="57%"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="fill-gray-500 text-[11px]"
+                >
+                  contributions
+                </text>
+                <Legend
+                  formatter={(name) => {
+                    const slice = pieData.find((entry) => entry.name === name);
+                    return `${name} (${slice ? slice.value : 0})`;
+                  }}
+                />
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>

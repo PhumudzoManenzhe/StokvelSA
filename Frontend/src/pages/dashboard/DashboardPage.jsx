@@ -58,8 +58,13 @@ export default function DashboardPage() {
     <div className="space-y-6">
       {/* Welcome. The landing page's hero is the product itself now, not a
           photograph, so this panel is carried by colour and type rather than
-          borrowing an image the signed-in app has no need for. */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800">
+          borrowing an image the signed-in app has no need for.
+
+          The gradient stops at primary-900 because that is the darkest shade
+          the palette defines: a from-primary-950 stop does not exist, and an
+          undefined from-stop makes the whole background-image invalid, which
+          silently left white text on white. */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700">
         <div className="relative p-6 md:p-8">
           <p className="text-sm font-medium text-primary-200">{greeting()},</p>
           <h2 className="mt-0.5 font-display text-2xl font-semibold tracking-tight text-white md:text-3xl">
